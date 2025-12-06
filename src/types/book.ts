@@ -33,6 +33,8 @@ export interface ScrapedBook {
 export interface BookImportPayload extends ScrapedBook {
   tags: string[];
   addToLibrary?: boolean;
+  markFinished?: boolean;
+  finishedDate?: string;
 }
 
 export type AuthStrategy = 'token' | 'password';

@@ -108,11 +108,16 @@ export class JeluClient {
 
   private async createUserBook(book: BookImportPayload): Promise<void> {
     const baseUrl = normalizeBaseUrl(this.options.jeluUrl);
+    const isFinished = Boolean(book.markFinished);
+    const finishedDate = this.normalizeDate(book.finishedDate);
     const payload: UserBookCreateRequest = {
       book: this.mapToBookRequest(book),
       owned: true,
-      toRead: true,
+      toRead: !isFinished,
       borrowed: false,
+      percentRead: isFinished ? 100 : undefined,
+      lastReadingEvent: isFinished ? 'FINISHED' : undefined,
+      lastReadingEventDate: isFinished ? finishedDate ?? new Date().toISOString() : undefined,
     };
 
     const response = await fetch(`${baseUrl}/api/v1/userbooks`, {
@@ -203,5 +208,16 @@ export class JeluClient {
     }
     const numeric = Number(value.replace(/[^0-9.]/g, ''));
     return Number.isFinite(numeric) ? numeric : undefined;
+  }
+
+  private normalizeDate(value?: string): string | undefined {
+    if (!value) {
+      return undefined;
+    }
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return undefined;
+    }
+    return parsed.toISOString();
   }
 }
