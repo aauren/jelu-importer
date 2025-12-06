@@ -1,0 +1,85 @@
+:root {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #0f172a;
+}
+
+body {
+  margin: 0;
+  background: #f7f9fc;
+}
+
+.options {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+}
+
+h1 {
+  margin-top: 0;
+}
+
+.notice {
+  background: #fff3cd;
+  border-left: 4px solid #ffca2c;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  gap: 0.3rem;
+}
+
+label.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+label.checkbox input[type='checkbox'] {
+  width: auto;
+}
+
+input {
+  padding: 0.5rem;
+  border: 1px solid #cbd5f5;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button[type='submit'] {
+  align-self: flex-start;
+  padding: 0.6rem 1.25rem;
+  background: #1771f1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.status {
+  min-height: 1.5rem;
+  font-size: 0.9rem;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.details label {
+  margin-left: 1rem;
+}

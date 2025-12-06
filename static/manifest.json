@@ -1,0 +1,45 @@
+{
+  "manifest_version": 2,
+  "name": "Jelu Importer",
+  "description": "Scrape book metadata from major catalog sites and import into your self-hosted Jelu instance.",
+  "version": "0.1.0",
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "Import book into Jelu"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "notifications",
+    "*://www.goodreads.com/*",
+    "*://*.amazon.com/*",
+    "*://books.google.com/*",
+    "*://*.audible.com/*"
+  ],
+  "icons": {
+    "48": "assets/icon-48.png",
+    "96": "assets/icon-96.png",
+    "128": "assets/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.goodreads.com/*",
+        "*://*.amazon.com/*",
+        "*://books.google.com/*",
+        "*://*.audible.com/*"
+      ],
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

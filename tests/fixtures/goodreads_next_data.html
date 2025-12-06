@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script id="__NEXT_DATA__" type="application/json">
+      {
+        "props": {
+          "pageProps": {
+            "apolloState": {
+              "ROOT_QUERY": {
+                "__typename": "Query",
+                "getBookByLegacyId({\"legacyId\":\"12345\"})": {
+                  "__ref": "Book:bookref"
+                }
+              },
+              "Book:bookref": {
+                "__typename": "Book",
+                "legacyId": 12345,
+                "title": "Example Book",
+                "titleComplete": "Example Book: A Tale",
+                "description": "<p>Example description</p>",
+                "description({\"stripped\":true})": "Example description",
+                "imageUrl": "https://example.com/cover.jpg",
+                "details": {
+                  "__typename": "BookDetails",
+                  "asin": "B012345678",
+                  "isbn": "0123456789",
+                  "isbn13": "978-0123456789",
+                  "numPages": 420,
+                  "publisher": "Test Publisher",
+                  "publicationTime": 1708214400000
+                },
+                "bookSeries": [
+                  {
+                    "__typename": "BookSeries",
+                    "series": {
+                      "__ref": "Series:series1"
+                    },
+                    "userPosition": "2"
+                  }
+                ],
+                "bookGenres": [
+                  {
+                    "__typename": "BookGenre",
+                    "genre": {
+                      "__typename": "Genre",
+                      "name": "Fantasy"
+                    }
+                  },
+                  {
+                    "__typename": "BookGenre",
+                    "genre": {
+                      "__typename": "Genre",
+                      "name": "Adventure"
+                    }
+                  }
+                ],
+                "primaryContributorEdge": {
+                  "__typename": "BookContributorEdge",
+                  "role": "Author",
+                  "node": {
+                    "__ref": "Contributor:author1"
+                  }
+                },
+                "secondaryContributorEdges": [
+                  {
+                    "__typename": "BookContributorEdge",
+                    "role": "Illustrator",
+                    "node": {
+                      "__ref": "Contributor:author2"
+                    }
+                  },
+                  {
+                    "__typename": "BookContributorEdge",
+                    "role": "Co-Author",
+                    "node": {
+                      "__ref": "Contributor:author3"
+                    }
+                  }
+                ]
+              },
+              "Contributor:author1": {
+                "__typename": "Contributor",
+                "name": "Primary Author"
+              },
+              "Contributor:author3": {
+                "__typename": "Contributor",
+                "name": "Second Author"
+              },
+              "Series:series1": {
+                "__typename": "Series",
+                "title": "Series Title"
+              }
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="bookTitle">Fallback Title</div>
+  </body>
+</html>

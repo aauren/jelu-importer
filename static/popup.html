@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles/popup.css" />
+    <title>Jelu Importer</title>
+  </head>
+  <body>
+    <main id="app" class="popup">
+      <header>
+        <h1>Jelu Importer</h1>
+      </header>
+      <section id="status" class="status"></section>
+      <section id="editor" class="editor hidden">
+        <form id="import-form">
+          <label>
+            Title
+            <input type="text" name="title" id="book-title" required />
+          </label>
+          <label>
+            Authors (comma separated)
+            <input type="text" name="authors" id="book-authors" />
+          </label>
+          <label>
+            Narrators (comma separated)
+            <input type="text" name="narrators" id="book-narrators" />
+          </label>
+          <label>
+            Tags (comma separated)
+            <input type="text" name="tags" id="book-tags" />
+          </label>
+          <label>
+            Series Name
+            <input type="text" name="seriesName" id="series-name" />
+          </label>
+          <label>
+            Series Number
+            <input type="text" name="seriesNumber" id="series-number" />
+          </label>
+          <label>
+            Publisher
+            <input type="text" name="publisher" id="publisher" />
+          </label>
+          <label>
+            Publish Date
+            <input type="date" name="publishDate" id="publish-date" />
+          </label>
+          <label>
+            Page Count
+            <input type="number" name="pageCount" id="page-count" min="1" />
+          </label>
+          <label>
+            Description
+            <textarea name="description" id="description" rows="4"></textarea>
+          </label>
+          <div class="ids">
+            <label>ISBN-10 <input type="text" id="isbn10" /></label>
+            <label>ISBN-13 <input type="text" id="isbn13" /></label>
+            <label>ASIN <input type="text" id="asin" /></label>
+            <label>Goodreads ID <input type="text" id="goodreadsId" /></label>
+            <label>Amazon ID <input type="text" id="amazonId" /></label>
+          </div>
+          <label class="checkbox">
+            <input type="checkbox" id="add-to-library" />
+            Add to my Jelu library
+          </label>
+          <button type="submit">Send to Jelu</button>
+        </form>
+      </section>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

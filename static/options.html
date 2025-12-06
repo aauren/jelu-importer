@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles/options.css" />
+    <title>Jelu Importer Settings</title>
+  </head>
+  <body>
+    <main class="options">
+      <h1>Jelu Importer Settings</h1>
+      <p class="notice">
+        Credentials are stored using Firefox local storage and are <strong>not encrypted</strong>.
+        For best security, create a dedicated API token in Jelu instead of reusing your
+        account password.
+      </p>
+      <form id="options-form">
+        <label>
+          Jelu Base URL (e.g. https://jelu.example.com)
+          <input type="url" id="jelu-url" required />
+        </label>
+        <label>
+          API Token
+          <input type="password" id="api-token" />
+        </label>
+        <details>
+          <summary>Use username/password instead of API token</summary>
+          <label>
+            Username
+            <input type="text" id="username" />
+          </label>
+          <label>
+            Password
+            <input type="password" id="password" />
+          </label>
+        </details>
+        <label>
+          Default Tags (comma separated)
+          <input type="text" id="default-tags" />
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" id="default-add-to-library" />
+          Automatically add imported books to my library
+        </label>
+        <button type="submit">Save Settings</button>
+      </form>
+      <p id="save-status" class="status" role="status"></p>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
