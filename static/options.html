@@ -12,8 +12,8 @@
       <h1>Jelu Importer Settings</h1>
       <p class="notice">
         Credentials are stored using Firefox local storage and are <strong>not encrypted</strong>.
-        For best security, create a dedicated API token in Jelu instead of reusing your
-        account password.
+        Create a dedicated, low-privilege Jelu account if possible (note if you create an account that is separate
+		from your primary account the "My Library" parts of the importer will not function correctly).
       </p>
       <form id="options-form">
         <label>
@@ -21,20 +21,13 @@
           <input type="url" id="jelu-url" required />
         </label>
         <label>
-          API Token
-          <input type="password" id="api-token" />
+          Username
+          <input type="text" id="username" autocomplete="username" required />
         </label>
-        <details>
-          <summary>Use username/password instead of API token</summary>
-          <label>
-            Username
-            <input type="text" id="username" />
-          </label>
-          <label>
-            Password
-            <input type="password" id="password" />
-          </label>
-        </details>
+        <label>
+          Password
+          <input type="password" id="password" autocomplete="current-password" required />
+        </label>
         <label>
           Default Tags (comma separated)
           <input type="text" id="default-tags" />

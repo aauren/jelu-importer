@@ -59,20 +59,12 @@ export class JeluClient {
   constructor(private readonly options: StoredOptions) {}
 
   private buildAuthHeaders(): Record<string, string> {
-    if (this.options.authStrategy === 'token' && this.options.apiToken) {
-      return { 'X-Auth-Token': this.options.apiToken };
-    }
-
-    if (
-      this.options.authStrategy === 'password' &&
-      this.options.username &&
-      this.options.password
-    ) {
+    if (this.options.username && this.options.password) {
       const encoded = btoa(`${this.options.username}:${this.options.password}`);
       return { Authorization: `Basic ${encoded}` };
     }
 
-    throw new Error('No valid authentication configuration provided.');
+    throw new Error('Provide your Jelu username and password in the options page.');
   }
 
   async importBook(book: BookImportPayload): Promise<void> {

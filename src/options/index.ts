@@ -16,7 +16,6 @@ class OptionsController {
 
   private populateForm(options: StoredOptions) {
     (document.getElementById('jelu-url') as HTMLInputElement).value = options.jeluUrl;
-    (document.getElementById('api-token') as HTMLInputElement).value = options.apiToken ?? '';
     (document.getElementById('username') as HTMLInputElement).value = options.username ?? '';
     (document.getElementById('password') as HTMLInputElement).value = options.password ?? '';
     (document.getElementById('default-tags') as HTMLInputElement).value = options.defaultTags.join(
@@ -41,22 +40,17 @@ class OptionsController {
       .map((tag) => tag.trim())
       .filter(Boolean);
 
-    const apiToken = (document.getElementById('api-token') as HTMLInputElement).value.trim();
     const username = (document.getElementById('username') as HTMLInputElement).value.trim();
     const password = (document.getElementById('password') as HTMLInputElement).value;
     const defaultAddToLibrary = (
       document.getElementById('default-add-to-library') as HTMLInputElement
     ).checked;
 
-    const authStrategy = apiToken ? 'token' : 'password';
-
     return {
       jeluUrl: (document.getElementById('jelu-url') as HTMLInputElement).value.trim(),
-      apiToken: apiToken || undefined,
       username: username || undefined,
       password: password || undefined,
       defaultTags: tags,
-      authStrategy,
       defaultAddToLibrary,
     };
   }

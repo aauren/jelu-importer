@@ -37,24 +37,18 @@ export interface BookImportPayload extends ScrapedBook {
   finishedDate?: string;
 }
 
-export type AuthStrategy = 'token' | 'password';
-
 export interface StoredOptions {
   jeluUrl: string;
-  apiToken?: string;
   username?: string;
   password?: string;
   defaultTags: string[];
-  authStrategy: AuthStrategy;
   defaultAddToLibrary: boolean;
 }
 
 export const defaultOptions: StoredOptions = {
   jeluUrl: '',
-  apiToken: '',
   username: '',
   password: '',
   defaultTags: [],
-  authStrategy: 'token',
   defaultAddToLibrary: false,
 };
