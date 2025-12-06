@@ -66,4 +66,40 @@ describe('amazon parser', () => {
     expect(result?.series?.number).toBe('3');
     expect(result?.tags).toContain('Fantasy');
   });
+
+  it('captures cover images from extended Amazon attributes', async () => {
+    const doc = createDocument(`
+      <div id="productTitle">Image Test</div>
+      <div id="bookDescription_feature_div"><div>desc</div></div>
+      <div id="imageBlock_feature_div">
+        <img
+          id="landingImage"
+          srcset="https://example.com/cover-small.jpg 1x, https://example.com/cover-large.jpg 2x"
+          data-old-hires="https://example.com/cover-hires.jpg"
+        />
+      </div>
+    `);
+
+    const result = await amazonParser.parse({
+      document: doc,
+      url: new URL('https://www.amazon.com/gp/product/B000TESTASIN'),
+    });
+
+    expect(result?.coverImage).toBe('https://example.com/cover-hires.jpg');
+  });
+
+  it('falls back to data-a-dynamic-image metadata for covers', async () => {
+    const doc = createDocument(`
+      <div id="productTitle">Dynamic Image</div>
+      <div id="bookDescription_feature_div"><div>desc</div></div>
+      <div data-a-dynamic-image='{"https://example.com/dynamic.jpg":[500,500]}'></div>
+    `);
+
+    const result = await amazonParser.parse({
+      document: doc,
+      url: new URL('https://www.amazon.com/gp/product/B000TESTASIN'),
+    });
+
+    expect(result?.coverImage).toBe('https://example.com/dynamic.jpg');
+  });
 });

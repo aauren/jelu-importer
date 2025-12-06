@@ -44,6 +44,8 @@ class PopupController {
   private calendarGrid = document.getElementById('calendar-grid') as HTMLElement;
   private calendarPrevBtn = document.getElementById('calendar-prev') as HTMLButtonElement;
   private calendarNextBtn = document.getElementById('calendar-next') as HTMLButtonElement;
+  private coverPreviewImage = document.getElementById('cover-preview-image') as HTMLImageElement | null;
+  private coverPreviewPlaceholder = document.getElementById('cover-preview-placeholder') as HTMLElement | null;
   private importStatusEl = document.getElementById('import-status') as HTMLElement;
   private spinnerEl = document.getElementById('submit-spinner') as HTMLElement;
   private book: ScrapedBook | null = null;
@@ -146,6 +148,7 @@ class PopupController {
     this.updateFinishedDateVisibility();
     this.renderCalendar();
     this.setImportStatus('');
+    this.updateCoverPreview(book.coverImage);
   }
 
   private async handleSubmit(event: SubmitEvent) {
@@ -411,6 +414,19 @@ class PopupController {
     }
     this.calendarYearSelect.innerHTML = options.join('');
     this.calendarYearSelect.value = String(selectedYear);
+  }
+  private updateCoverPreview(src?: string) {
+    if (src && this.coverPreviewImage) {
+      this.coverPreviewImage.src = src;
+      this.coverPreviewImage.classList.remove('hidden');
+      this.coverPreviewPlaceholder?.classList.add('hidden');
+    } else {
+      if (this.coverPreviewImage) {
+        this.coverPreviewImage.classList.add('hidden');
+        this.coverPreviewImage.removeAttribute('src');
+      }
+      this.coverPreviewPlaceholder?.classList.remove('hidden');
+    }
   }
 }
 

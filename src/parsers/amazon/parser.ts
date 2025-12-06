@@ -197,27 +197,149 @@ export const amazonParser: BookParser = {
   matches: (url) => url.hostname.includes('amazon.'),
   parse: async ({ document, url }) => parseAmazon(document, url),
 };
+
+function normalizeImageUrl(value?: string | null): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const stripped = value.replace(/^url\((.*)\)$/i, '$1').trim().replace(/^['"]|['"]$/g, '');
+  if (!stripped) {
+    return undefined;
+  }
+  if (stripped.startsWith('//')) {
+    return `https:${stripped}`;
+  }
+  return stripped;
+}
+
+function pickSrcsetCandidate(value?: string | null): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const entries = value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  if (!entries.length) {
+    return undefined;
+  }
+  const last = entries[entries.length - 1];
+  const [url] = last.split(/\s+/);
+  return url;
+}
+
+function parseDynamicImageData(value?: string | null): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  try {
+    const parsed = JSON.parse(value) as Record<string, [number, number] | number[]>;
+    const entries = Object.entries(parsed);
+    if (!entries.length) {
+      return undefined;
+    }
+    entries.sort(([, sizeA], [, sizeB]) => {
+      const area = (size?: [number, number] | number[]) =>
+        Array.isArray(size) && size.length >= 2 ? Number(size[0]) * Number(size[1]) : 0;
+      return area(sizeB) - area(sizeA);
+    });
+    return entries[0][0];
+  } catch (error) {
+    console.warn('Failed to parse Amazon dynamic image metadata', error);
+    return undefined;
+  }
+}
+
+function extractFromImage(img?: HTMLImageElement | null): string | undefined {
+  if (!img) {
+    return undefined;
+  }
+  const candidates = [
+    img.currentSrc,
+    img.getAttribute('data-old-hires'),
+    img.getAttribute('data-old-highres'),
+    img.getAttribute('data-old-src'),
+    img.getAttribute('data-hires'),
+    img.getAttribute('src'),
+    pickSrcsetCandidate(img.getAttribute('srcset')),
+    img.getAttribute('data-src'),
+    parseDynamicImageData(img.getAttribute('data-a-dynamic-image')),
+  ];
+  for (const candidate of candidates) {
+    const normalized = normalizeImageUrl(candidate);
+    if (normalized) {
+      return normalized;
+    }
+  }
+  return undefined;
+}
+
+function extractBackgroundImage(element: Element | null): string | undefined {
+  if (!element) {
+    return undefined;
+  }
+  const style = element.getAttribute('style');
+  if (!style) {
+    return undefined;
+  }
+  const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/i);
+  if (!match) {
+    return undefined;
+  }
+  return normalizeImageUrl(match[1]);
+}
+
+function extractImageSource(element: Element | null): string | undefined {
+  if (!element) {
+    return undefined;
+  }
+  if (element instanceof HTMLImageElement) {
+    const direct = extractFromImage(element);
+    if (direct) {
+      return direct;
+    }
+  }
+  const nested = element.querySelector('img');
+  if (nested) {
+    const nestedSrc = extractFromImage(nested);
+    if (nestedSrc) {
+      return nestedSrc;
+    }
+  }
+  const background = extractBackgroundImage(element);
+  if (background) {
+    return background;
+  }
+  const dynamic = parseDynamicImageData(element.getAttribute('data-a-dynamic-image'));
+  if (dynamic) {
+    return dynamic;
+  }
+  return undefined;
+}
+
 function getCoverImage(document: Document): string | undefined {
-  const selectors = ['#ebooksImgBlkFront', '#imgBlkFront', '#landingImage', '#imgTagWrapperId img'];
+  const selectors = [
+    '#ebooksImgBlkFront',
+    '#imgBlkFront',
+    '#landingImage',
+    '#imgTagWrapperId img',
+    '#imageBlock_feature_div img',
+    '#ebooksImageBlockContainer img',
+    '#main-image-container img',
+    '#image-canvas img',
+    '#img-canvas img',
+  ];
   for (const selector of selectors) {
-    const src = document.querySelector<HTMLImageElement>(selector)?.getAttribute('src');
-    if (src) {
-      return src;
+    const candidate = extractImageSource(document.querySelector(selector));
+    if (candidate) {
+      return candidate;
     }
   }
 
   const dynamicImageNode = document.querySelector('[data-a-dynamic-image]');
-  const dynamicData = dynamicImageNode?.getAttribute('data-a-dynamic-image');
-  if (dynamicData) {
-    try {
-      const parsed = JSON.parse(dynamicData) as Record<string, unknown>;
-      const firstKey = Object.keys(parsed)[0];
-      if (firstKey) {
-        return firstKey;
-      }
-    } catch (error) {
-      console.warn('Failed to parse Amazon dynamic image metadata', error);
-    }
+  const dynamicCandidate = extractImageSource(dynamicImageNode);
+  if (dynamicCandidate) {
+    return dynamicCandidate;
   }
 
   return (
