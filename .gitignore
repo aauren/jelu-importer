@@ -4,3 +4,5 @@ dist/
 artifacts/
 .npm-cache/
 coverage/
+pages/
+static/assets/concepts/
