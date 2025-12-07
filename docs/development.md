@@ -5,7 +5,7 @@ preparation.
 
 ## Prerequisites
 
-- Node.js 18+ and npm 9+.
+- Node.js 22+ and npm 10+.
 - Firefox Developer Edition (easier temporary add-on installs).
 - `web-ext` (installed locally via npm dev dependency).
 - Optional: `git-lfs` once screenshots/fixtures are tracked.
