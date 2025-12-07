@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title>Book arrow circle icon</title>
+  <circle cx="128" cy="128" r="120" fill="#0f172a"/>
+  <circle cx="128" cy="128" r="116" fill="#fefefe"/>
+  <g transform="translate(62 44)">
+    <rect x="0" y="0" width="60" height="168" rx="12" fill="#1d938a"/>
+    <rect x="46" y="12" width="60" height="168" rx="12" fill="#ffb341"/>
+    <rect x="92" y="24" width="60" height="168" rx="12" fill="#7d41e6"/>
+    <line x1="18" y1="20" x2="18" y2="148" stroke="#c9fff6" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(122 88)">
+    <circle cx="60" cy="48" r="48" fill="#0f172a"/>
+    <path d="M16 48h56" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+    <path d="M60 28l32 20-32 20z" fill="#fff"/>
+  </g>
+</svg>

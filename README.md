@@ -1,5 +1,7 @@
 # Jelu Importer Browser Add-on
 
+![Jelu Importer icon](static/assets/book-arrow-circle.svg)
+
 Jelu Importer is a Firefox browser extension that scrapes metadata from popular book catalog pages (Goodreads, Amazon
 Books, Google Books, and Audible) and sends it to a self-hosted Jelu instance. The add-on focuses on giving users a
 fast, editable preview before import so they can clean up titles, IDs, narrators, and other fields.
