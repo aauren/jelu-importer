@@ -1,3 +1,16 @@
+# [1.1.0](https://github.com/aauren/jelu-importer/compare/v1.0.0...v1.1.0) (2025-12-07)
+
+
+### Bug Fixes
+
+* **index.ts:** remove unsafe HTML assignments ([65f47dd](https://github.com/aauren/jelu-importer/commit/65f47dd6d1db42d599292c444881f2313092898e))
+
+
+### Features
+
+* **manifest.json:** add an ID to the manifest ([37100b1](https://github.com/aauren/jelu-importer/commit/37100b1de3e6660c5d50cdb185b109d144d4875c))
+* prepping for first release ([21894d1](https://github.com/aauren/jelu-importer/commit/21894d139de8119f96b2f83c18056ee1895d8f3b))
+
 # 1.0.0 (2025-12-07)
 
 
