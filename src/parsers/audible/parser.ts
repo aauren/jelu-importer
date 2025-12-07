@@ -1,10 +1,16 @@
 import { cleanText, metaContent, textFrom, toNumber } from '../../common/dom';
+import { createDebugLogger } from '../../common/logger';
 import { ScrapedBook } from '../../types/book';
-import { BookParser } from '../base';
+import { BookParser, ParserContext } from '../base';
 
-async function parseAudible(document: Document, url: URL): Promise<ScrapedBook | null> {
+const debugLog = createDebugLogger('audible');
+
+async function parseAudible(context: ParserContext): Promise<ScrapedBook | null> {
+  const { document, url, options } = context;
+  debugLog(options, 'Parsing Audible page', url.toString());
   const title = cleanText(textFrom(document.querySelector('h1[data-testid="hero-title-block__title"]')));
   if (!title) {
+    debugLog(options, 'Unable to locate title on Audible page; aborting');
     return null;
   }
 
@@ -28,7 +34,7 @@ async function parseAudible(document: Document, url: URL): Promise<ScrapedBook |
   const releaseDate = textFrom(document.querySelector('[data-testid="release-date"] span span'));
   const publisher = textFrom(document.querySelector('[data-testid="publisher"] span span'));
 
-  return {
+  const parsed: ScrapedBook = {
     source: 'audible',
     sourceUrl: url.toString(),
     title,
@@ -44,10 +50,15 @@ async function parseAudible(document: Document, url: URL): Promise<ScrapedBook |
     pageCount: runtime ? toNumber(runtime) : undefined,
     tags: [],
   };
+  debugLog(options, 'Parsed Audible metadata', {
+    title: parsed.title,
+    authors: parsed.authors,
+  });
+  return parsed;
 }
 
 export const audibleParser: BookParser = {
   id: 'audible',
   matches: (url) => url.hostname.includes('audible.'),
-  parse: async ({ document, url }) => parseAudible(document, url),
+  parse: parseAudible,
 };

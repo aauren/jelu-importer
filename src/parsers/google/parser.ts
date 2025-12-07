@@ -1,12 +1,9 @@
 import { cleanText, metaContent, textFrom, toNumber } from '../../common/dom';
+import { createDebugLogger } from '../../common/logger';
 import { BookIdentifiers, BookSeriesInfo, ScrapedBook, StoredOptions } from '../../types/book';
 import { BookParser, ParserContext } from '../base';
 
-const debugLog = (options: StoredOptions | undefined, ...args: unknown[]) => {
-  if (options?.enableLogging) {
-    console.debug('[google-books]', ...args);
-  }
-};
+const debugLog = createDebugLogger('google-books');
 
 type InfoMap = Record<string, string>;
 

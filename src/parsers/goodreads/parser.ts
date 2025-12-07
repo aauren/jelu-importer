@@ -1,6 +1,9 @@
 import { cleanText, metaContent, textFrom, toNumber } from '../../common/dom';
-import { BookIdentifiers, ScrapedBook } from '../../types/book';
-import { BookParser } from '../base';
+import { createDebugLogger } from '../../common/logger';
+import { BookIdentifiers, ScrapedBook, StoredOptions } from '../../types/book';
+import { BookParser, ParserContext } from '../base';
+
+const debugLog = createDebugLogger('goodreads');
 
 function extractGoodreadsId(url: URL): string | undefined {
   const match = url.pathname.match(/(book\/show|work\/show)\/([0-9]+)[.-]?/);
@@ -27,9 +30,10 @@ interface GoodreadsNextData {
   };
 }
 
-function readNextData(document: Document): ApolloState | null {
+function readNextData(document: Document, options?: StoredOptions): ApolloState | null {
   const script = document.querySelector<HTMLScriptElement>('script#__NEXT_DATA__');
   if (!script?.textContent) {
+    debugLog(options, '__NEXT_DATA__ script not found');
     return null;
   }
 
@@ -37,7 +41,7 @@ function readNextData(document: Document): ApolloState | null {
     const data = JSON.parse(script.textContent) as GoodreadsNextData;
     return data.props?.pageProps?.apolloState ?? null;
   } catch (error) {
-    console.warn('Failed to parse Goodreads __NEXT_DATA__ payload', error);
+    debugLog(options, 'Failed to parse Goodreads __NEXT_DATA__ payload', error);
     return null;
   }
 }
@@ -152,15 +156,17 @@ function formatPublicationDate(value?: number | null): string | undefined {
   }
 }
 
-function parseFromNextData(document: Document, url: URL): ScrapedBook | null {
-  const apollo = readNextData(document);
+function parseFromNextData(document: Document, url: URL, options?: StoredOptions): ScrapedBook | null {
+  const apollo = readNextData(document, options);
   if (!apollo) {
+    debugLog(options, 'Apollo state unavailable; cannot parse structured Goodreads data');
     return null;
   }
 
   const goodreadsId = extractGoodreadsId(url);
   const book = findBookNode(apollo, goodreadsId);
   if (!book) {
+    debugLog(options, 'Unable to locate book node in __NEXT_DATA__', goodreadsId ?? 'unknown');
     return null;
   }
 
@@ -171,7 +177,7 @@ function parseFromNextData(document: Document, url: URL): ScrapedBook | null {
       | string
       | undefined) ?? cleanText(book.description);
 
-  return {
+  const parsed: ScrapedBook = {
     source: 'goodreads',
     sourceUrl: url.toString(),
     title: cleanText(book.titleComplete ?? book.title) ?? 'Unknown title',
@@ -187,9 +193,14 @@ function parseFromNextData(document: Document, url: URL): ScrapedBook | null {
     series: buildSeriesInfo(apollo, book),
     tags: buildTags(book),
   };
+  debugLog(options, 'Parsed Goodreads metadata from __NEXT_DATA__', {
+    title: parsed.title,
+    goodreadsId: parsed.identifiers.goodreadsId,
+  });
+  return parsed;
 }
 
-async function parseFromLegacyDom(document: Document, url: URL): Promise<ScrapedBook | null> {
+async function parseFromLegacyDom(document: Document, url: URL, options?: StoredOptions): Promise<ScrapedBook | null> {
   const title =
     firstMatchText(document, [
       '#bookTitle',
@@ -198,6 +209,7 @@ async function parseFromLegacyDom(document: Document, url: URL): Promise<Scraped
       'h1[data-testid="bookTitle"]',
     ]) ?? cleanText(metaContent(document, 'meta[property="og:title"]'));
   if (!title) {
+    debugLog(options, 'Legacy DOM parser could not locate title; aborting');
     return null;
   }
 
@@ -233,7 +245,7 @@ async function parseFromLegacyDom(document: Document, url: URL): Promise<Scraped
     .map((el) => el.textContent?.trim() || '')
     .filter(Boolean);
 
-  return {
+  const parsed: ScrapedBook = {
     source: 'goodreads',
     sourceUrl: url.toString(),
     title,
@@ -256,16 +268,30 @@ async function parseFromLegacyDom(document: Document, url: URL): Promise<Scraped
     },
     tags,
   };
+  debugLog(options, 'Parsed Goodreads metadata from legacy DOM', {
+    title: parsed.title,
+    goodreadsId: parsed.identifiers.goodreadsId,
+  });
+  return parsed;
+}
+
+async function parseGoodreads(context: ParserContext): Promise<ScrapedBook | null> {
+  const { document, url, options } = context;
+  debugLog(options, 'Parsing Goodreads page', url.toString());
+  const structured = parseFromNextData(document, url, options);
+  if (structured) {
+    return structured;
+  }
+  debugLog(options, 'Structured data unavailable; falling back to legacy DOM parsing');
+  const legacy = await parseFromLegacyDom(document, url, options);
+  if (!legacy) {
+    debugLog(options, 'Legacy DOM parsing failed to extract book metadata');
+  }
+  return legacy;
 }
 
 export const goodreadsParser: BookParser = {
   id: 'goodreads',
   matches: (url) => url.hostname.includes('goodreads.com'),
-  parse: async ({ document, url }) => {
-    const structured = parseFromNextData(document, url);
-    if (structured) {
-      return structured;
-    }
-    return parseFromLegacyDom(document, url);
-  },
+  parse: parseGoodreads,
 };

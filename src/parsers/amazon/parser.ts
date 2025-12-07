@@ -1,6 +1,9 @@
 import { cleanText, metaContent, textFrom, toNumber } from '../../common/dom';
+import { createDebugLogger } from '../../common/logger';
 import { BookSeriesInfo, ScrapedBook } from '../../types/book';
-import { BookParser } from '../base';
+import { BookParser, ParserContext } from '../base';
+
+const debugLog = createDebugLogger('amazon');
 
 function extractAsin(document: Document): string | undefined {
   const asinInput = document.getElementById('ASIN') as HTMLInputElement | null;
@@ -123,9 +126,12 @@ function normalizeDate(value?: string): string | undefined {
   return text;
 }
 
-async function parseAmazon(document: Document, url: URL): Promise<ScrapedBook | null> {
+async function parseAmazon(context: ParserContext): Promise<ScrapedBook | null> {
+  const { document, url, options } = context;
+  debugLog(options, 'Parsing Amazon page', url.toString());
   const title = cleanText(textFrom(document.getElementById('productTitle')));
   if (!title) {
+    debugLog(options, 'Unable to locate product title; aborting parse');
     return null;
   }
   const contributors = Array.from(
@@ -169,7 +175,7 @@ async function parseAmazon(document: Document, url: URL): Promise<ScrapedBook | 
   const asin = extractAsin(document) ?? detailMap['asin'];
   const tags = extractTags(document);
 
-  return {
+  const parsed: ScrapedBook = {
     source: 'amazon',
     sourceUrl: url.toString(),
     title,
@@ -190,12 +196,18 @@ async function parseAmazon(document: Document, url: URL): Promise<ScrapedBook | 
     series: parseSeriesInfo(richAttributes),
     tags,
   };
+  debugLog(options, 'Parsed Amazon metadata', {
+    title: parsed.title,
+    asin: parsed.identifiers.asin,
+    isbn13: parsed.identifiers.isbn13,
+  });
+  return parsed;
 }
 
 export const amazonParser: BookParser = {
   id: 'amazon',
   matches: (url) => url.hostname.includes('amazon.'),
-  parse: async ({ document, url }) => parseAmazon(document, url),
+  parse: parseAmazon,
 };
 
 function normalizeImageUrl(value?: string | null): string | undefined {
