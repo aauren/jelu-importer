@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { findParser } from '../parsers';
 import { ParserContext } from '../parsers/base';
 import { ScrapedBook } from '../types/book';
+import { getOptions } from '../common/storage';
 
 async function handleScrapeRequest(): Promise<ScrapedBook | null> {
   const url = new URL(window.location.href);
@@ -10,9 +11,11 @@ async function handleScrapeRequest(): Promise<ScrapedBook | null> {
     return null;
   }
 
+  const options = await getOptions();
   const context: ParserContext = {
     document,
     url,
+    options,
   };
 
   try {

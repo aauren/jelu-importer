@@ -1,6 +1,12 @@
 import { cleanText, metaContent, textFrom, toNumber } from '../../common/dom';
-import { BookSeriesInfo, ScrapedBook } from '../../types/book';
-import { BookParser } from '../base';
+import { BookIdentifiers, BookSeriesInfo, ScrapedBook, StoredOptions } from '../../types/book';
+import { BookParser, ParserContext } from '../base';
+
+const debugLog = (options: StoredOptions | undefined, ...args: unknown[]) => {
+  if (options?.enableLogging) {
+    console.debug('[google-books]', ...args);
+  }
+};
 
 type InfoMap = Record<string, string>;
 
@@ -204,18 +210,37 @@ function extractSeries(document: Document): BookSeriesInfo | undefined {
   return undefined;
 }
 
-async function parseGoogleBooks(document: Document, url: URL): Promise<ScrapedBook | null> {
-  const domResult = parseFromDom(document, url);
-  if (domResult) {
-    return domResult;
+async function parseGoogleBooks(context: ParserContext): Promise<ScrapedBook | null> {
+  const { document, url, options } = context;
+  const volumeId = extractVolumeId(url);
+  debugLog(options, 'Parsing Google Books page', url.toString(), 'volumeId:', volumeId ?? 'unknown');
+  let book = parseFromDom(document, url);
+
+  if (!book) {
+    debugLog(options, 'DOM parsing produced no result; attempting Google Books API fallback');
+    const apiResult = await fetchFromBooksApi(url, options);
+    if (!apiResult) {
+      debugLog(options, 'API fallback failed or returned no metadata');
+    } else {
+      debugLog(options, 'API fallback succeeded');
+    }
+    return apiResult;
   }
 
-  const apiResult = await fetchFromBooksApi(url);
-  if (!apiResult) {
-    return null;
+  if (shouldSupplementWithApi(book, options)) {
+    debugLog(options, 'DOM metadata missing key fields; supplementing with Google Books API');
+    const apiResult = await fetchFromBooksApi(url, options);
+    if (apiResult) {
+      debugLog(options, 'Merging API response with DOM metadata');
+      book = mergeBookDetails(book, apiResult);
+    } else {
+      debugLog(options, 'Supplemental API request failed; proceeding with DOM metadata only');
+    }
+  } else {
+    debugLog(options, 'DOM metadata complete; skipping Google Books API request');
   }
 
-  return enrichWithDom(apiResult, document);
+  return enrichWithDom(book, document);
 }
 
 function isGoogleBooksUrl(url: URL): boolean {
@@ -228,7 +253,7 @@ function isGoogleBooksUrl(url: URL): boolean {
 export const googleBooksParser: BookParser = {
   id: 'google-books',
   matches: (url) => isGoogleBooksUrl(url),
-  parse: async ({ document, url }) => parseGoogleBooks(document, url),
+  parse: async (context) => parseGoogleBooks(context),
 };
 
 function parseFromDom(document: Document, url: URL): ScrapedBook | null {
@@ -346,20 +371,28 @@ function normalizeHttpsUrl(value?: string): string | undefined {
   return value.replace(/^http:\/\//i, 'https://');
 }
 
-async function fetchFromBooksApi(url: URL): Promise<ScrapedBook | null> {
+async function fetchFromBooksApi(url: URL, options?: StoredOptions): Promise<ScrapedBook | null> {
   const volumeId = extractVolumeId(url);
   if (!volumeId) {
+    debugLog(options, 'Skipped Google Books API call because volumeId is unknown');
+    return null;
+  }
+  if (typeof fetch === 'undefined') {
+    debugLog(options, 'Skipped Google Books API call because fetch is unavailable');
     return null;
   }
 
   try {
+    debugLog(options, 'Fetching metadata from Google Books API for', volumeId);
     const response = await fetch(`https://www.googleapis.com/books/v1/volumes/${volumeId}`);
     if (!response.ok) {
+      debugLog(options, 'Google Books API responded with non-OK status', response.status);
       return null;
     }
     const payload = (await response.json()) as GoogleBooksApiResponse;
     const info = payload.volumeInfo;
     if (!info?.title) {
+      debugLog(options, 'Google Books API payload missing volumeInfo.title');
       return null;
     }
 
@@ -388,7 +421,69 @@ async function fetchFromBooksApi(url: URL): Promise<ScrapedBook | null> {
       tags: info.categories ?? [],
     };
   } catch (error) {
-    console.warn('Failed to fetch Google Books API metadata', error);
+    debugLog(options, 'Failed to fetch Google Books API metadata', error);
     return null;
   }
+}
+
+function shouldSupplementWithApi(book: ScrapedBook, options?: StoredOptions): boolean {
+  const identifiers = book.identifiers ?? {};
+  const missing = [
+    !book.publishDate && 'publishDate',
+    !book.pageCount && 'pageCount',
+    !book.series && 'series',
+    !identifiers.isbn10 && !identifiers.isbn13 && 'isbn',
+  ].filter(Boolean);
+  if (missing.length) {
+    debugLog(options, 'Detected missing fields:', missing.join(', '));
+    return true;
+  }
+  return false;
+}
+
+function mergeBookDetails(primary: ScrapedBook, fallback?: ScrapedBook): ScrapedBook {
+  if (!fallback) {
+    return primary;
+  }
+  const mergedAuthors = mergeLists(primary.authors, fallback.authors);
+  const mergedTags = mergeLists(primary.tags, fallback.tags);
+  const mergedSeries = primary.series ?? fallback.series;
+  return {
+    ...fallback,
+    ...primary,
+    description: primary.description ?? fallback.description,
+    coverImage: primary.coverImage ?? fallback.coverImage,
+    publisher: primary.publisher ?? fallback.publisher,
+    publishDate: primary.publishDate ?? fallback.publishDate,
+    pageCount: primary.pageCount ?? fallback.pageCount,
+    authors: mergedAuthors ?? [],
+    tags: mergedTags ?? [],
+    identifiers: mergeIdentifiers(primary.identifiers, fallback.identifiers),
+    series: mergedSeries,
+  };
+}
+
+function mergeLists(a?: string[], b?: string[]): string[] | undefined {
+  const combined = [...(a ?? []), ...(b ?? [])]
+    .map((entry) => cleanText(entry ?? undefined))
+    .filter((entry): entry is string => Boolean(entry));
+  if (!combined.length) {
+    return undefined;
+  }
+  return Array.from(new Set(combined));
+}
+
+function mergeIdentifiers(
+  primary: BookIdentifiers = {},
+  fallback: BookIdentifiers = {},
+): BookIdentifiers {
+  const result: BookIdentifiers = { ...fallback };
+  (Object.entries(primary) as [keyof BookIdentifiers, string | undefined][]).forEach(
+    ([key, value]) => {
+      if (value) {
+        result[key] = value;
+      }
+    },
+  );
+  return result;
 }

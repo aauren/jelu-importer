@@ -1,8 +1,9 @@
-import { ScrapedBook } from '../types/book';
+import { ScrapedBook, StoredOptions } from '../types/book';
 
 export interface ParserContext {
   document: Document;
   url: URL;
+  options?: StoredOptions;
 }
 
 export interface BookParser {

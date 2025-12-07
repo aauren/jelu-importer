@@ -189,4 +189,39 @@ describe('google books parser', () => {
       delete (globalThis as any).fetch;
     }
   });
+
+  it('supplements missing DOM fields with Google Books API data', async () => {
+    const doc = createDocument('<div class="UDZeY">Partial Metadata</div>');
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        volumeInfo: {
+          title: 'Partial Metadata',
+          authors: ['Supplemental Author'],
+          publishedDate: '1999',
+          categories: ['Supplement'],
+          pageCount: 456,
+          industryIdentifiers: [{ type: 'ISBN_13', identifier: '9780000000000' }],
+        },
+      }),
+    } as unknown as Response);
+    const originalFetch = (globalThis as any).fetch;
+    (globalThis as any).fetch = fetchMock;
+
+    const result = await googleBooksParser.parse({
+      document: doc,
+      url: new URL('https://books.google.com/books/about?id=partial'),
+    });
+
+    expect(fetchMock).toHaveBeenCalled();
+    expect(result?.publishDate).toBe('1999');
+    expect(result?.pageCount).toBe(456);
+    expect(result?.identifiers.isbn13).toBe('9780000000000');
+
+    if (originalFetch) {
+      (globalThis as any).fetch = originalFetch;
+    } else {
+      delete (globalThis as any).fetch;
+    }
+  });
 });

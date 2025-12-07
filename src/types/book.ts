@@ -43,6 +43,7 @@ export interface StoredOptions {
   password?: string;
   defaultTags: string[];
   defaultAddToLibrary: boolean;
+  enableLogging?: boolean;
 }
 
 export const defaultOptions: StoredOptions = {
@@ -51,4 +52,5 @@ export const defaultOptions: StoredOptions = {
   password: '',
   defaultTags: [],
   defaultAddToLibrary: false,
+  enableLogging: false,
 };

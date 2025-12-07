@@ -23,6 +23,8 @@ class OptionsController {
     );
     (document.getElementById('default-add-to-library') as HTMLInputElement).checked =
       options.defaultAddToLibrary ?? false;
+    (document.getElementById('enable-logging') as HTMLInputElement).checked =
+      options.enableLogging ?? false;
   }
 
   private async handleSubmit(event: SubmitEvent) {
@@ -45,6 +47,7 @@ class OptionsController {
     const defaultAddToLibrary = (
       document.getElementById('default-add-to-library') as HTMLInputElement
     ).checked;
+    const enableLogging = (document.getElementById('enable-logging') as HTMLInputElement).checked;
 
     return {
       jeluUrl: (document.getElementById('jelu-url') as HTMLInputElement).value.trim(),
@@ -52,6 +55,7 @@ class OptionsController {
       password: password || undefined,
       defaultTags: tags,
       defaultAddToLibrary,
+      enableLogging,
     };
   }
 }
