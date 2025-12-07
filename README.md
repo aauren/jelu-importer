@@ -45,3 +45,7 @@ The popup mirrors the default settings so you can override them for a specific b
 - [Development & Automation Guide](docs/development.md)
 
 Additional documents will be added under the `docs/` directory as the project evolves.
+
+## License
+
+Jelu Importer is released under the [Apache License 2.0](LICENSE).
