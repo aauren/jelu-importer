@@ -9,7 +9,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-		"id": "@extension-without-data-collection",
+	    "id": "jelu-importer@aauren",
         "data_collection_permissions": {
           "required": ["none"]
          }
