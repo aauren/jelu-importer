@@ -329,13 +329,19 @@ class PopupController {
     const firstDay = base.getDay();
 
     const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-    const fragments: string[] = [];
+    this.calendarGrid.textContent = '';
+
     weekdays.forEach((day) => {
-      fragments.push(`<div class="weekday">${day}</div>`);
+      const div = document.createElement('div');
+      div.className = 'weekday';
+      div.textContent = day;
+      this.calendarGrid.append(div);
     });
 
     for (let i = 0; i < firstDay; i += 1) {
-      fragments.push('<div class="empty"></div>');
+      const spacer = document.createElement('div');
+      spacer.className = 'empty';
+      this.calendarGrid.append(spacer);
     }
 
     for (let day = 1; day <= daysInMonth; day += 1) {
@@ -344,12 +350,14 @@ class PopupController {
       const isCurrent = currentParsed
         ? date.toDateString() === currentParsed.toDateString()
         : false;
-      fragments.push(
-        `<button type="button" data-date="${formatted}" data-current="${isCurrent}">${day}</button>`,
-      );
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.date = formatted;
+      button.dataset.current = String(isCurrent);
+      button.textContent = String(day);
+      this.calendarGrid.append(button);
     }
 
-    this.calendarGrid.innerHTML = fragments.join('');
     Array.from(this.calendarGrid.querySelectorAll('button[data-date]')).forEach((button) => {
       button.addEventListener('click', () => {
         const value = button.getAttribute('data-date');
@@ -406,13 +414,14 @@ class PopupController {
     const range = 40;
     const minYear = Math.max(1900, Math.min(selectedYear, nowYear) - range);
     const maxYear = Math.max(selectedYear, nowYear) + 2;
-    const options: string[] = [];
+    this.calendarYearSelect.textContent = '';
     for (let year = minYear; year <= maxYear; year += 1) {
-      options.push(
-        `<option value="${year}" ${year === selectedYear ? 'selected' : ''}>${year}</option>`,
-      );
+      const option = document.createElement('option');
+      option.value = String(year);
+      option.selected = year === selectedYear;
+      option.textContent = String(year);
+      this.calendarYearSelect.append(option);
     }
-    this.calendarYearSelect.innerHTML = options.join('');
     this.calendarYearSelect.value = String(selectedYear);
   }
   private updateCoverPreview(src?: string) {
