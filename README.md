@@ -18,6 +18,7 @@ Screenshots will be added once the UI is ready.
 - Goodreads
 - Amazon Books
 - Google Books (often has less complete book information)
+- Audible
 
 ## Installation from Releases
 
