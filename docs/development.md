@@ -24,7 +24,7 @@ The command installs all dependencies, including the bundler, test libraries, an
 | `npm run lint` | Executes ESLint (and TypeScript checks if enabled). |
 | `npm run test` | Runs Jest unit tests, covering parser modules and utilities. |
 | `npm run build` | Produces a production-ready bundle (minified JS/CSS, processed manifest). |
-| `npm run package` | Calls `web-ext build` to generate the `.xpi`/`.zip` artifact stored under `dist/`. |
+| `npm run package` | Calls `web-ext build` to generate `.zip` under `artifacts/`. Rename it to `.xpi` for manual installs. |
 | `npm run clean` | Removes build artifacts (`dist`, `.web-ext-artifacts`). |
 
 Adjust or extend the scripts inside `package.json` as the codebase grows.
@@ -37,12 +37,29 @@ Adjust or extend the scripts inside `package.json` as the codebase grows.
 4. **Manual QA** – `npm run dev` launches Firefox with a temporary profile to visit supported sites and trigger imports.
 5. **Document Changes** – update docs in `docs/` when parser behavior or configuration steps change.
 
+## Continuous Integration
+
+- Every pull request (and pushes to `main`) triggers the `ci.yml` workflow, which runs `npm run lint`, `npm run test`,
+  and `npm run build` on Ubuntu with Node.js 20. Keep the build green before merging.
+- Add or adjust tests as you touch parser logic; they are part of `npm test` and therefore block the workflow if they
+  fail.
+
 ## Packaging & Releases
 
-1. Bump versions in `manifest.json` and `package.json`.
-2. Run `npm run build && npm run package`.
-3. Sign the generated artifact via the Firefox Add-on Developer Hub or `web-ext sign` (requires API credentials).
-4. Upload the signed `.xpi` plus release notes to GitHub Releases.
+Semantic-release automates versioning, changelog generation, building, and GitHub Releases:
+
+1. Follow [Conventional Commits](https://www.conventionalcommits.org/) in every merge. The release bot derives the next
+   semantic version from these messages.
+2. When changes land on `main`, the `release.yml` workflow runs `semantic-release`, which:
+   - bumps `package.json`, `package-lock.json`, and `static/manifest.json`,
+   - regenerates `CHANGELOG.md`,
+   - runs `npm run package` to produce `artifacts/jelu_importer-<version>.zip`,
+   - creates a GitHub Release and uploads the ZIP (rename to `.xpi` for manual installs or feed it to AMO for signing).
+3. If you need a signed build, run `web-ext sign --api-key <amo-key> --api-secret <amo-secret>` locally or extend the
+   release workflow with AMO credentials.
+
+Manual release steps are no longer necessary; push a commit with the right prefix (feat/fix/chore) and let semantic
+release handle the rest.
 
 ## Testing Strategy
 

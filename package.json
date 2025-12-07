@@ -1,6 +1,6 @@
 {
   "name": "jelu-importer",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "Jelu Importer is a Firefox browser extension that scrapes metadata from popular book catalog pages (Goodreads, Amazon Books, Google Books, and Audible) and sends it to a self-hosted Jelu instance. The add-on focuses on giving users a fast, editable preview before import so they can clean up titles, IDs, narrators, and other fields.",
   "main": "dist/background.js",
   "directories": {
@@ -27,6 +27,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.2",
+    "@semantic-release/npm": "^13.1.2",
     "@types/firefox-webext-browser": "^143.0.0",
     "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.48.1",
@@ -41,6 +46,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.7.4",
     "rimraf": "^6.1.2",
+    "semantic-release": "^25.0.2",
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3",
     "web-ext": "^9.2.0"
