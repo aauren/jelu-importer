@@ -34,7 +34,11 @@ module.exports = {
         assets: [
           {
             path: 'artifacts/*.zip',
-            label: 'Firefox unsigned build',
+            label: 'Firefox Unsigned Build',
+          },
+          {
+            path: 'artifacts/*.xpi',
+            label: 'Firefox Signed Plugin',
           },
         ],
       },
