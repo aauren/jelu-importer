@@ -7,16 +7,20 @@
     "doc": "docs"
   },
   "scripts": {
-    "clean": "rimraf dist .web-ext-artifacts artifacts",
-    "build": "node ./scripts/build.mjs",
-    "watch:build": "node ./scripts/build.mjs --watch",
+    "clean": "rimraf dist dist-chrome .web-ext-artifacts artifacts",
+    "build": "npm run build:firefox && npm run build:chrome",
+    "build:firefox": "node ./scripts/build.mjs --target=firefox",
+    "build:chrome": "node ./scripts/build.mjs --target=chrome",
+    "watch:build": "node ./scripts/build.mjs --watch --target=firefox",
     "start:webext": "web-ext run --source-dir dist --watch-files dist --keep-profile-changes",
     "dev": "run-p watch:build start:webext",
     "lint": "eslint --config eslint.config.cjs \"src/**/*.{ts,tsx}\" \"tests/**/*.ts\"",
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "format": "prettier --write \"{src,tests,docs}/**/*.{ts,md}\"",
-    "package": "npm run clean && npm run build && web-ext build --source-dir dist --artifacts-dir artifacts"
+    "package": "npm run clean && npm run package:firefox && npm run package:chrome",
+    "package:firefox": "npm run build:firefox && web-ext build --source-dir dist --artifacts-dir artifacts/firefox",
+    "package:chrome": "npm run build:chrome && web-ext build --source-dir dist-chrome --artifacts-dir artifacts/chrome"
   },
   "keywords": [],
   "author": "",

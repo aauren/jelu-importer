@@ -18,7 +18,8 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepareCmd: 'node ./scripts/update-manifest-version.mjs ${nextRelease.version} && npm run package',
+        prepareCmd:
+          'node ./scripts/update-manifest-version.mjs ${nextRelease.version} && npm run package && npm run package:chrome',
       },
     ],
     [
@@ -33,8 +34,12 @@ module.exports = {
       {
         assets: [
           {
-            path: 'artifacts/*.zip',
+            path: 'artifacts/firefox/*.zip',
             label: 'Firefox Unsigned Build',
+          },
+          {
+            path: 'artifacts/chrome/*.zip',
+            label: 'Chrome Build',
           },
         ],
       },

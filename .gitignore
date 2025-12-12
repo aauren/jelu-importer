@@ -4,6 +4,7 @@ dist-chrome/
 .web-ext-artifacts/
 artifacts/
 .npm-cache/
+.cursor/
 coverage/
 pages/
 static/assets/concepts/

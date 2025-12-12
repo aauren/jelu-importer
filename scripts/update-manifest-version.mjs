@@ -2,12 +2,12 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 async function updateManifest(version) {
-  const manifestPath = path.resolve('static', 'manifest.json');
+  const manifestPath = path.resolve('manifests', 'base.json');
   const raw = await readFile(manifestPath, 'utf8');
   const manifest = JSON.parse(raw);
   manifest.version = version;
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
-  console.log(`[version] Updated static/manifest.json to ${version}`);
+  console.log(`[version] Updated manifests/base.json to ${version}`);
 }
 
 const nextVersion = process.argv[2];
