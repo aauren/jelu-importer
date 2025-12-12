@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/aauren/jelu-importer/compare/v1.3.0...v1.4.0) (2025-12-12)
+
+
+### Features
+
+* **release.yml:** attempt again to attach xpi to GitHub release ([d1aa566](https://github.com/aauren/jelu-importer/commit/d1aa56658d160b3002df2cd6a4428f7b4d88e512))
+
 # [1.3.0](https://github.com/aauren/jelu-importer/compare/v1.2.0...v1.3.0) (2025-12-12)
 
 
