@@ -1,3 +1,15 @@
+# [1.5.0](https://github.com/aauren/jelu-importer/compare/v1.4.0...v1.5.0) (2025-12-12)
+
+
+### Bug Fixes
+
+* **package:** fix build problems introduced with chrome ([c49e373](https://github.com/aauren/jelu-importer/commit/c49e3730a18eae9a307f0b0fccbb197b7b5462bf))
+
+
+### Features
+
+* add chrome support ([c0e8063](https://github.com/aauren/jelu-importer/commit/c0e8063b387126349420b6ebf682c2709148d97a))
+
 # [1.4.0](https://github.com/aauren/jelu-importer/compare/v1.3.0...v1.4.0) (2025-12-12)
 
 
