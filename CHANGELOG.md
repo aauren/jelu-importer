@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/aauren/jelu-importer/compare/v1.1.0...v1.2.0) (2025-12-12)
+
+
+### Features
+
+* **release.yml:** add Mozilla add-on signing ([ffcd90e](https://github.com/aauren/jelu-importer/commit/ffcd90e4de14bab12e787c4ef50b6f55c3a2efa3))
+
 # [1.1.0](https://github.com/aauren/jelu-importer/compare/v1.0.0...v1.1.0) (2025-12-07)
 
 
