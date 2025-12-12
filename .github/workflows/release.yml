@@ -26,8 +26,13 @@ jobs:
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Sign Add-On Via AMO
-        run: npx web-ext sign --source-dir dist --artifacts-dir artifacts --channel listed
+      - name: Sign Add-On via AMO
+        run: npx web-ext sign --source-dir dist --artifacts-dir artifacts/signed --channel listed
         env:
           WEB_EXT_API_KEY: ${{ secrets.AMO_ISSUER }}
           WEB_EXT_API_SECRET: ${{ secrets.AMO_SECRET }}
+      - name: Attach Signed XPI to GitHub Release
+        run: gh release upload $(git describe --tags --abbrev=0) artifacts/signed/*.xpi --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
