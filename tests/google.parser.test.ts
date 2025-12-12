@@ -225,4 +225,3 @@ describe('google books parser', () => {
     }
   });
 });
-

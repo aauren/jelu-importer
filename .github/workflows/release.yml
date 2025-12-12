@@ -32,7 +32,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Sign Add-On via AMO
-        run: npx web-ext sign --source-dir dist --artifacts-dir artifacts/signed --channel listed
+        run: npx web-ext sign --source-dir dist --artifacts-dir artifacts/signed --channel listed --license Apache-2.0
         env:
           WEB_EXT_API_KEY: ${{ secrets.AMO_ISSUER }}
           WEB_EXT_API_SECRET: ${{ secrets.AMO_SECRET }}
