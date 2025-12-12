@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-chrome/
 .web-ext-artifacts/
 artifacts/
 .npm-cache/
