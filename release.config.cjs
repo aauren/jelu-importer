@@ -19,7 +19,7 @@ module.exports = {
       '@semantic-release/exec',
       {
         prepareCmd:
-          'node ./scripts/update-manifest-version.mjs ${nextRelease.version} && npm run package && npm run package:chrome',
+          'node ./scripts/update-manifest-version.mjs ${nextRelease.version} && npm run package',
       },
     ],
     [

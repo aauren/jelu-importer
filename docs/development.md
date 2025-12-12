@@ -57,7 +57,7 @@ Semantic-release automates versioning, changelog generation, building, and GitHu
 2. When changes land on `main`, the `release.yml` workflow runs `semantic-release`, which:
    - bumps `package.json`, `package-lock.json`, and `manifests/base.json`,
    - regenerates `CHANGELOG.md`,
-   - runs `npm run package` and `npm run package:chrome` so `artifacts/firefox/*.zip` and `artifacts/chrome/*.zip` exist,
+   - runs `npm run package` so `artifacts/firefox/*.zip` and `artifacts/chrome/*.zip` exist,
    - creates a GitHub Release and uploads both ZIPs (rename the Firefox one to `.xpi` for manual installs if needed).
 3. If you need a signed Firefox build, run `web-ext sign --api-key <amo-key> --api-secret <amo-secret>` locally or let the
    GitHub workflow step handle it (credentials must be present as secrets).
