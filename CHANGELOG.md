@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/aauren/jelu-importer/compare/v1.5.1...v1.5.2) (2025-12-12)
+
+
+### Bug Fixes
+
+* continue trying to fix automated build ([c3a18cb](https://github.com/aauren/jelu-importer/commit/c3a18cb3f63ab4745be6f801784e7d41caa7f2ec))
+
 ## [1.5.1](https://github.com/aauren/jelu-importer/compare/v1.5.0...v1.5.1) (2025-12-12)
 
 
