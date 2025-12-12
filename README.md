@@ -45,6 +45,13 @@ Screenshots will be added once the UI is ready.
 4. Open the extension options page to configure your Jelu server URL, port, and authentication details before importing
    any books.
 
+### Install in Google Chrome from GitHub Release
+
+1. Download the Chrome ZIP artifact from the latest GitHub Release and extract it.
+2. Open `chrome://extensions`, enable **Developer mode**, and choose **Load unpacked**.
+3. Select the extracted folder that contains `manifest.json`.
+4. Pin the extension and configure it via the options page (Chrome > Extensions > Details > Extension options).
+
 ## Configuration & Authentication
 
 - Open the add-on’s options page and enter your Jelu base URL (e.g. `https://jelu.example.com`).

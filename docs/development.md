@@ -23,9 +23,13 @@ The command installs all dependencies, including the bundler, test libraries, an
 | `npm run dev` | Runs `web-ext run` with hot reload in Firefox for interactive development. |
 | `npm run lint` | Executes ESLint (and TypeScript checks if enabled). |
 | `npm run test` | Runs Jest unit tests, covering parser modules and utilities. |
-| `npm run build` | Produces a production-ready bundle (minified JS/CSS, processed manifest). |
-| `npm run package` | Calls `web-ext build` to generate `.zip` under `artifacts/`. Rename it to `.xpi` for manual installs. |
-| `npm run clean` | Removes build artifacts (`dist`, `.web-ext-artifacts`). |
+| `npm run build` | Builds the Firefox & Chrome MV3 bundle (default target). |
+| `npm run build:chrome` | Builds the Chrome MV3 bundle into `dist-chrome/`. |
+| `npm run build:firefox` | Builds the Firefox MV3 bundle into `dist/`. |
+| `npm run package` | Cleans, rebuild Chrome and Firefox. |
+| `npm run package:firefox` | Cleans, rebuilds Firefox, and uses `web-ext build` to drop ZIPs under `artifacts/firefox/`. |
+| `npm run package:chrome` | Builds Chrome and zips it to `artifacts/chrome/` for Web Store uploads. |
+| `npm run clean` | Removes build artifacts (`dist`, `dist-chrome`, `.web-ext-artifacts`, and `artifacts`). |
 
 Adjust or extend the scripts inside `package.json` as the codebase grows.
 
@@ -40,7 +44,7 @@ Adjust or extend the scripts inside `package.json` as the codebase grows.
 ## Continuous Integration
 
 - Every pull request (and pushes to `main`) triggers the `ci.yml` workflow, which runs `npm run lint`, `npm run test`,
-  and `npm run build` on Ubuntu with Node.js 20. Keep the build green before merging.
+  and `npm run build` on Ubuntu with Node.js 22. Keep the build green before merging.
 - Add or adjust tests as you touch parser logic; they are part of `npm test` and therefore block the workflow if they
   fail.
 
@@ -51,12 +55,12 @@ Semantic-release automates versioning, changelog generation, building, and GitHu
 1. Follow [Conventional Commits](https://www.conventionalcommits.org/) in every merge. The release bot derives the next
    semantic version from these messages.
 2. When changes land on `main`, the `release.yml` workflow runs `semantic-release`, which:
-   - bumps `package.json`, `package-lock.json`, and `static/manifest.json`,
+   - bumps `package.json`, `package-lock.json`, and `manifests/base.json`,
    - regenerates `CHANGELOG.md`,
-   - runs `npm run package` to produce `artifacts/jelu_importer-<version>.zip`,
-   - creates a GitHub Release and uploads the ZIP (rename to `.xpi` for manual installs or feed it to AMO for signing).
-3. If you need a signed build, run `web-ext sign --api-key <amo-key> --api-secret <amo-secret>` locally or extend the
-   release workflow with AMO credentials.
+   - runs `npm run package` and `npm run package:chrome` so `artifacts/firefox/*.zip` and `artifacts/chrome/*.zip` exist,
+   - creates a GitHub Release and uploads both ZIPs (rename the Firefox one to `.xpi` for manual installs if needed).
+3. If you need a signed Firefox build, run `web-ext sign --api-key <amo-key> --api-secret <amo-secret>` locally or let the
+   GitHub workflow step handle it (credentials must be present as secrets).
 
 Manual release steps are no longer necessary; push a commit with the right prefix (feat/fix/chore) and let semantic
 release handle the rest.
