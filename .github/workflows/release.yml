@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
 
 jobs:
   release:
@@ -35,4 +38,3 @@ jobs:
         run: gh release upload $(git describe --tags --abbrev=0) artifacts/signed/*.xpi --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

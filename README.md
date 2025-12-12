@@ -13,8 +13,13 @@ with the process and defining approaches, but almost all of the code work within
 
 Screenshots will be added once the UI is ready.
 
-- **Popup / Import Flow:** _coming soon_
-- **Configuration / Options Page:** _coming soon_
+- **Popup / Import Flow:**
+
+![Import Interface Screenshot](static/assets/import_interface_screenshot.png)
+
+- **Configuration / Options Page:**
+
+![Preferences Interface Screenshot](static/assets/preferences_interface_screenshot.png)
 
 ## Currently Supported Catalogs
 
@@ -25,6 +30,15 @@ Screenshots will be added once the UI is ready.
 
 ## Installation from Releases
 
+### Install in Firefox from Mozilla Addons Site
+
+1. Open [Jelu Importer Site](https://addons.mozilla.org/en-US/firefox/addon/jelu-importer/) in Firefox
+2. Click `Add to Firefox`
+3. Read permissions dialog and click `Add`
+4. Open the extension options page to configure your Jelu server URL, port, and authentication details before importing
+
+### Install in Firefox from GitHub Release
+
 1. Download the latest `.xpi` package from the GitHub Releases page once builds are published.
 2. In Firefox, open `about:addons`, select **Install Add-on From File...**, and choose the downloaded `.xpi`.
 3. Verify that the add-on appears in the toolbar and pin it if necessary.
@@ -33,12 +47,16 @@ Screenshots will be added once the UI is ready.
 
 ## Configuration & Authentication
 
-1. Open the add-on’s options page and enter your Jelu base URL (e.g. `https://jelu.example.com`).
-2. Provide the username and password you normally use to sign into Jelu. The extension authenticates every request with
-   HTTP Basic, so these credentials must have permission to add books. Credentials are stored in Firefox local storage
-   without encryption, so create a dedicated, low-privilege Jelu account for this add-on if possible. Note if you use a
-   different account than the one that you primarily use with Jelu then any of the "My Library" functions will not work.
-3. Choose any default tags or toggle “add to library automatically” if you want the popup checkbox preselected.
+- Open the add-on’s options page and enter your Jelu base URL (e.g. `https://jelu.example.com`).
+  - In Firefox enter `about:addons` in the browser URL bar, click the `...` next to Jelu Importer, click `Preferences`
+- Provide the username and password you normally use to sign into Jelu.
+  - The extension authenticates every request with HTTP Basic, so these credentials must have permission to add books.
+  - Credentials are stored in Firefox local storage without encryption
+  - If you are concerned about the security of this, create a dedicated, low-privilege Jelu account for this add-on if
+    possible.
+  - Note if you use a different account than the one that you primarily use with Jelu then any of the "My Library"
+    functions will not work.
+- Choose any default tags or toggle “add to library automatically” if you want the popup checkbox preselected.
 
 The popup mirrors the default settings so you can override them for a specific book before importing.
 
