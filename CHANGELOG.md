@@ -1,3 +1,11 @@
+## [1.5.1](https://github.com/aauren/jelu-importer/compare/v1.5.0...v1.5.1) (2025-12-12)
+
+
+### Bug Fixes
+
+* force rebuild for packaging ([75eb143](https://github.com/aauren/jelu-importer/commit/75eb143d138a6a506a8e9f4ee4393ec4d6b61d9b))
+* force rebuild for packaging ([6fd89f0](https://github.com/aauren/jelu-importer/commit/6fd89f0334dfb4819d54ebdabfe94328f7bb9e1d))
+
 # [1.5.0](https://github.com/aauren/jelu-importer/compare/v1.4.0...v1.5.0) (2025-12-12)
 
 
