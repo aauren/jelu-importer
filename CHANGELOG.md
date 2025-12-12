@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/aauren/jelu-importer/compare/v1.5.2...v1.5.3) (2025-12-12)
+
+
+### Bug Fixes
+
+* include apache license in signing request ([e1fd610](https://github.com/aauren/jelu-importer/commit/e1fd61041b05e93f7cd6ba2e16c2258671287219))
+
 ## [1.5.2](https://github.com/aauren/jelu-importer/compare/v1.5.1...v1.5.2) (2025-12-12)
 
 
