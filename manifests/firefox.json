@@ -2,6 +2,12 @@
   "manifest_version": 2,
   "browser_specific_settings": {
     "gecko": {
+      "id": "jelu-importer@aauren",
+      "data_collection_permissions": {
+          "required": [
+            "none"
+        ]
+      },
       "strict_min_version": "109.0"
     }
   },
