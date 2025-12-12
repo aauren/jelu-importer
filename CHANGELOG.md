@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/aauren/jelu-importer/compare/v1.2.0...v1.3.0) (2025-12-12)
+
+
+### Features
+
+* **release.config.cjs:** add the signed XPI to the GitHub Release ([2de2639](https://github.com/aauren/jelu-importer/commit/2de2639600ae06bd99f88b0479a209d326e3d8e2))
+
 # [1.2.0](https://github.com/aauren/jelu-importer/compare/v1.1.0...v1.2.0) (2025-12-12)
 
 
