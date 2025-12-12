@@ -1,3 +1,11 @@
+## [1.5.4](https://github.com/aauren/jelu-importer/compare/v1.5.3...v1.5.4) (2025-12-12)
+
+
+### Bug Fixes
+
+* remove AI dreamed license parameter to web-ext sign ([1945373](https://github.com/aauren/jelu-importer/commit/1945373637603b6c09d18d43cb9a2ea3679c5299))
+* return firefox specific manifest settings ([00ca070](https://github.com/aauren/jelu-importer/commit/00ca070a1e4c00887ba2deebbf4b21206ebdf919))
+
 ## [1.5.3](https://github.com/aauren/jelu-importer/compare/v1.5.2...v1.5.3) (2025-12-12)
 
 
