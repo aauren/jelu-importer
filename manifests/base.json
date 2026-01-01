@@ -14,7 +14,7 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["storage", "activeTab", "tabs", "notifications"],
+  "permissions": ["storage", "activeTab", "notifications"],
   "host_permissions": [
     "*://www.goodreads.com/*",
     "*://*.amazon.com/*",
