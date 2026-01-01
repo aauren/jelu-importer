@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import { RuntimeMessage } from '../types/messages';
 import { findParser } from '../parsers';
 import { ParserContext } from '../parsers/base';
 import { ScrapedBook } from '../types/book';
@@ -27,8 +28,9 @@ async function handleScrapeRequest(): Promise<ScrapedBook | null> {
   }
 }
 
-browser.runtime.onMessage.addListener((message) => {
-  if (message?.type === 'SCRAPE_PAGE') {
+browser.runtime.onMessage.addListener((message: unknown) => {
+  const msg = message as RuntimeMessage;
+  if (msg?.type === 'SCRAPE_PAGE') {
     return handleScrapeRequest();
   }
   return undefined;
