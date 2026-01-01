@@ -128,7 +128,8 @@ jobs:
       - name: Extract ZIP for signing
         run: |
           mkdir -p dist-signing
-          unzip -q artifacts/firefox/*.zip -d dist-signing
+          ZIP_FILE=$(find artifacts/firefox -name "*.zip" -print -quit)
+          unzip -q "$ZIP_FILE" -d dist-signing
       - name: Sign Add-On via AMO
         run: npx web-ext sign --source-dir dist-signing --artifacts-dir artifacts/signed --channel listed
         env:
