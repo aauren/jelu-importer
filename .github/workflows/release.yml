@@ -70,8 +70,8 @@ jobs:
     permissions:
       contents: write
     outputs:
-      release-created: ${{ steps.release.outputs.release-created }}
-      version: ${{ steps.release.outputs.version }}
+      release-created: ${{ steps.release.outputs.new_release_published }}
+      version: ${{ steps.release.outputs.new_release_version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -86,30 +86,30 @@ jobs:
       - run: npm ci
       - name: Run Semantic Release
         id: release
-        run: npx semantic-release
+        uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Package Extensions
-        if: steps.release.outputs.release-created == 'true'
+        if: steps.release.outputs.new_release_published == 'true'
         run: |
           npx web-ext build --source-dir dist --artifacts-dir artifacts/firefox
           npx web-ext build --source-dir dist-chrome --artifacts-dir artifacts/chrome
           node ./scripts/rename-artifacts.mjs
       - uses: actions/upload-artifact@v4
-        if: steps.release.outputs.release-created == 'true'
+        if: steps.release.outputs.new_release_published == 'true'
         with:
           name: packaged-firefox
           path: artifacts/firefox/
           retention-days: 90
       - uses: actions/upload-artifact@v4
-        if: steps.release.outputs.release-created == 'true'
+        if: steps.release.outputs.new_release_published == 'true'
         with:
           name: packaged-chrome
           path: artifacts/chrome/
           retention-days: 90
       - name: Attach Chrome ZIP to GitHub Release
-        if: steps.release.outputs.release-created == 'true'
-        run: gh release upload v${{ steps.release.outputs.version }} artifacts/chrome/*.zip --clobber
+        if: steps.release.outputs.new_release_published == 'true'
+        run: gh release upload v${{ steps.release.outputs.new_release_version }} artifacts/chrome/*.zip --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
