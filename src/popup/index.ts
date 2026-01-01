@@ -29,41 +29,244 @@ async function getActiveTab() {
   return tab;
 }
 
+class DatePicker {
+  private input: HTMLInputElement;
+  private toggleBtn: HTMLButtonElement;
+  private container: HTMLElement;
+  private monthLabel: HTMLElement;
+  private yearSelect: HTMLSelectElement;
+  private grid: HTMLElement;
+  private prevBtn: HTMLButtonElement;
+  private nextBtn: HTMLButtonElement;
+  private visible = false;
+  private cursor = new Date();
+
+  constructor(
+    inputId: string,
+    toggleBtnId: string,
+    containerId: string,
+    monthLabelId: string,
+    yearSelectId: string,
+    gridId: string,
+    prevBtnId: string,
+    nextBtnId: string,
+  ) {
+    this.input = document.getElementById(inputId) as HTMLInputElement;
+    this.toggleBtn = document.getElementById(toggleBtnId) as HTMLButtonElement;
+    this.container = document.getElementById(containerId) as HTMLElement;
+    this.monthLabel = document.getElementById(monthLabelId) as HTMLElement;
+    this.yearSelect = document.getElementById(yearSelectId) as HTMLSelectElement;
+    this.grid = document.getElementById(gridId) as HTMLElement;
+    this.prevBtn = document.getElementById(prevBtnId) as HTMLButtonElement;
+    this.nextBtn = document.getElementById(nextBtnId) as HTMLButtonElement;
+
+    this.toggleBtn?.addEventListener('click', (event) => {
+      event.preventDefault();
+      this.toggle(!this.visible);
+    });
+    this.prevBtn?.addEventListener('click', () => this.shiftMonth(-1));
+    this.nextBtn?.addEventListener('click', () => this.shiftMonth(1));
+    this.yearSelect?.addEventListener('change', () => this.handleYearSelect());
+    this.input?.addEventListener('input', () => this.syncCursor());
+  }
+
+  toggle(show: boolean = !this.visible) {
+    if (!this.container) {
+      return;
+    }
+    this.visible = show;
+    this.container.classList.toggle('hidden', !show);
+    if (show) {
+      this.render();
+    }
+  }
+
+  hide() {
+    this.toggle(false);
+  }
+
+  isVisible(): boolean {
+    return this.visible;
+  }
+
+  contains(element: HTMLElement): boolean {
+    return this.container?.contains(element) || this.toggleBtn?.contains(element);
+  }
+
+  private shiftMonth(delta: number) {
+    this.cursor = new Date(this.cursor.getFullYear(), this.cursor.getMonth() + delta, 1);
+    this.render();
+  }
+
+  private handleYearSelect() {
+    if (!this.yearSelect) {
+      return;
+    }
+    const year = Number(this.yearSelect.value);
+    if (!Number.isFinite(year)) {
+      return;
+    }
+    this.cursor = new Date(year, this.cursor.getMonth(), 1);
+    this.render();
+  }
+
+  private syncCursor() {
+    const parsed = this.parseDate(this.input?.value);
+    if (parsed) {
+      this.cursor = new Date(parsed.getFullYear(), parsed.getMonth(), 1);
+    }
+  }
+
+  render() {
+    if (!this.grid || !this.monthLabel || !this.input) {
+      return;
+    }
+    const base = new Date(this.cursor.getFullYear(), this.cursor.getMonth(), 1);
+    const locale = navigator.language || 'en-US';
+    this.monthLabel.textContent = base.toLocaleDateString(locale, {
+      month: 'long',
+    });
+    this.buildYearOptions(base.getFullYear());
+    const currentValue = this.input.value;
+    const currentParsed = this.parseDate(currentValue);
+    const daysInMonth = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
+    const firstDay = base.getDay();
+
+    const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    this.grid.textContent = '';
+
+    weekdays.forEach((day) => {
+      const div = document.createElement('div');
+      div.className = 'weekday';
+      div.textContent = day;
+      this.grid.append(div);
+    });
+
+    for (let i = 0; i < firstDay; i += 1) {
+      const spacer = document.createElement('div');
+      spacer.className = 'empty';
+      this.grid.append(spacer);
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const date = new Date(base.getFullYear(), base.getMonth(), day);
+      const formatted = this.formatDate(date);
+      const isCurrent = currentParsed
+        ? date.toDateString() === currentParsed.toDateString()
+        : false;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.date = formatted;
+      button.dataset.current = String(isCurrent);
+      button.textContent = String(day);
+      this.grid.append(button);
+    }
+
+    Array.from(this.grid.querySelectorAll('button[data-date]')).forEach((button) => {
+      button.addEventListener('click', () => {
+        const value = button.getAttribute('data-date');
+        if (value && this.input) {
+          this.input.value = value;
+          this.toggle(false);
+        }
+      });
+    });
+  }
+
+  private parseDate(value?: string): Date | null {
+    if (!value) {
+      return null;
+    }
+    const [year, month, day] = value.split('-').map((part) => Number(part));
+    if (!year || !month || !day) {
+      return null;
+    }
+    const date = new Date(year, month - 1, day);
+    if (Number.isNaN(date.getTime())) {
+      return null;
+    }
+    return date;
+  }
+
+  private formatDate(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = `${date.getMonth() + 1}`.padStart(2, '0');
+    const dd = `${date.getDate()}`.padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  private buildYearOptions(selectedYear: number) {
+    if (!this.yearSelect) {
+      return;
+    }
+    const nowYear = new Date().getFullYear();
+    const range = 40;
+    const minYear = Math.max(1900, Math.min(selectedYear, nowYear) - range);
+    const maxYear = Math.max(selectedYear, nowYear) + 2;
+    this.yearSelect.textContent = '';
+    for (let year = minYear; year <= maxYear; year += 1) {
+      const option = document.createElement('option');
+      option.value = String(year);
+      option.selected = year === selectedYear;
+      option.textContent = String(year);
+      this.yearSelect.append(option);
+    }
+    this.yearSelect.value = String(selectedYear);
+  }
+}
+
 class PopupController {
   private statusEl = document.getElementById('status') as HTMLElement;
   private editorEl = document.getElementById('editor') as HTMLElement;
   private form = document.getElementById('import-form') as HTMLFormElement;
-  private addToLibraryInput = document.getElementById('add-to-library') as HTMLInputElement;
-  private markFinishedInput = document.getElementById('mark-finished') as HTMLInputElement;
-  private finishedDateWrapper = document.getElementById('finished-date-wrapper') as HTMLElement;
-  private finishedDateInput = document.getElementById('finished-date') as HTMLInputElement;
-  private calendarToggleBtn = document.getElementById('finished-date-picker') as HTMLButtonElement;
-  private calendarContainer = document.getElementById('finished-date-calendar') as HTMLElement;
-  private calendarMonthLabel = document.getElementById('calendar-month') as HTMLElement;
-  private calendarYearSelect = document.getElementById('calendar-year') as HTMLSelectElement;
-  private calendarGrid = document.getElementById('calendar-grid') as HTMLElement;
-  private calendarPrevBtn = document.getElementById('calendar-prev') as HTMLButtonElement;
-  private calendarNextBtn = document.getElementById('calendar-next') as HTMLButtonElement;
-  private coverPreviewImage = document.getElementById('cover-preview-image') as HTMLImageElement | null;
-  private coverPreviewPlaceholder = document.getElementById('cover-preview-placeholder') as HTMLElement | null;
+  private addToLibraryInput = document.getElementById(
+    'add-to-library',
+  ) as HTMLInputElement;
+  private markFinishedInput = document.getElementById(
+    'mark-finished',
+  ) as HTMLInputElement;
+  private finishedDateWrapper = document.getElementById(
+    'finished-date-wrapper',
+  ) as HTMLElement;
+  private finishedDateInput = document.getElementById(
+    'finished-date',
+  ) as HTMLInputElement;
+  private coverPreviewImage = document.getElementById(
+    'cover-preview-image',
+  ) as HTMLImageElement | null;
+  private coverPreviewPlaceholder = document.getElementById(
+    'cover-preview-placeholder',
+  ) as HTMLElement | null;
   private importStatusEl = document.getElementById('import-status') as HTMLElement;
   private spinnerEl = document.getElementById('submit-spinner') as HTMLElement;
   private book: ScrapedBook | null = null;
   private options: StoredOptions | null = null;
-  private calendarVisible = false;
-  private calendarCursor = new Date();
+  private finishedDatePicker: DatePicker;
+  private publishDatePicker: DatePicker;
 
   constructor() {
+    this.finishedDatePicker = new DatePicker(
+      'finished-date',
+      'finished-date-picker',
+      'finished-date-calendar',
+      'calendar-month',
+      'calendar-year',
+      'calendar-grid',
+      'calendar-prev',
+      'calendar-next',
+    );
+    this.publishDatePicker = new DatePicker(
+      'publish-date',
+      'publish-date-picker',
+      'publish-date-calendar',
+      'publish-calendar-month',
+      'publish-calendar-year',
+      'publish-calendar-grid',
+      'publish-calendar-prev',
+      'publish-calendar-next',
+    );
     this.form?.addEventListener('submit', (event) => this.handleSubmit(event));
     this.markFinishedInput?.addEventListener('change', () => this.handleFinishedToggle());
-    this.calendarToggleBtn?.addEventListener('click', (event) => {
-      event.preventDefault();
-      this.toggleCalendar(!this.calendarVisible);
-    });
-    this.calendarPrevBtn?.addEventListener('click', () => this.shiftCalendar(-1));
-    this.calendarNextBtn?.addEventListener('click', () => this.shiftCalendar(1));
-    this.calendarYearSelect?.addEventListener('change', () => this.handleYearSelect());
-    this.finishedDateInput?.addEventListener('input', () => this.syncCalendarCursor());
     document.addEventListener('mousedown', (event) => this.handleCalendarBlur(event));
   }
 
@@ -121,7 +324,8 @@ class PopupController {
       book.series?.name ?? '';
     (document.getElementById('series-number') as HTMLInputElement).value =
       book.series?.number ?? '';
-    (document.getElementById('publisher') as HTMLInputElement).value = book.publisher ?? '';
+    (document.getElementById('publisher') as HTMLInputElement).value =
+      book.publisher ?? '';
     (document.getElementById('publish-date') as HTMLInputElement).value =
       book.publishDate ?? '';
     (document.getElementById('page-count') as HTMLInputElement).value =
@@ -133,7 +337,8 @@ class PopupController {
       book.identifiers.isbn10 ?? '';
     (document.getElementById('isbn13') as HTMLInputElement).value =
       book.identifiers.isbn13 ?? '';
-    (document.getElementById('asin') as HTMLInputElement).value = book.identifiers.asin ?? '';
+    (document.getElementById('asin') as HTMLInputElement).value =
+      book.identifiers.asin ?? '';
     (document.getElementById('goodreadsId') as HTMLInputElement).value =
       book.identifiers.goodreadsId ?? '';
     (document.getElementById('amazonId') as HTMLInputElement).value =
@@ -146,7 +351,8 @@ class PopupController {
       this.finishedDateInput.value = '';
     }
     this.updateFinishedDateVisibility();
-    this.renderCalendar();
+    this.finishedDatePicker.render();
+    this.publishDatePicker.render();
     this.setImportStatus('');
     this.updateCoverPreview(book.coverImage);
   }
@@ -157,7 +363,9 @@ class PopupController {
       this.setStatus('Nothing to import yet.', 'error');
       return;
     }
-    const submitBtn = this.form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const submitBtn = this.form.querySelector(
+      'button[type="submit"]',
+    ) as HTMLButtonElement;
     submitBtn.disabled = true;
     this.setImportStatus('Sending to Jelu...');
     this.toggleSpinner(true);
@@ -184,13 +392,23 @@ class PopupController {
     const authorsInput = document.getElementById('book-authors') as HTMLInputElement;
     const narratorsInput = document.getElementById('book-narrators') as HTMLInputElement;
     const tagsInput = document.getElementById('book-tags') as HTMLInputElement;
-    const descriptionInput = document.getElementById('description') as HTMLTextAreaElement;
+    const descriptionInput = document.getElementById(
+      'description',
+    ) as HTMLTextAreaElement;
 
-    const seriesName = (document.getElementById('series-name') as HTMLInputElement).value.trim();
-    const seriesNumber = (document.getElementById('series-number') as HTMLInputElement).value.trim();
-    const publisher = (document.getElementById('publisher') as HTMLInputElement).value.trim();
-    const publishDate = (document.getElementById('publish-date') as HTMLInputElement).value;
-    const pageCountValue = (document.getElementById('page-count') as HTMLInputElement).value;
+    const seriesName = (
+      document.getElementById('series-name') as HTMLInputElement
+    ).value.trim();
+    const seriesNumber = (
+      document.getElementById('series-number') as HTMLInputElement
+    ).value.trim();
+    const publisher = (
+      document.getElementById('publisher') as HTMLInputElement
+    ).value.trim();
+    const publishDate = (document.getElementById('publish-date') as HTMLInputElement)
+      .value;
+    const pageCountValue = (document.getElementById('page-count') as HTMLInputElement)
+      .value;
     const finishedDateValue = this.finishedDateInput?.value.trim();
 
     const seriesDetails =
@@ -211,13 +429,20 @@ class PopupController {
       description: descriptionInput.value.trim(),
       coverImage: this.book?.coverImage,
       identifiers: {
-        isbn10: (document.getElementById('isbn10') as HTMLInputElement).value.trim() || undefined,
-        isbn13: (document.getElementById('isbn13') as HTMLInputElement).value.trim() || undefined,
-        asin: (document.getElementById('asin') as HTMLInputElement).value.trim() || undefined,
+        isbn10:
+          (document.getElementById('isbn10') as HTMLInputElement).value.trim() ||
+          undefined,
+        isbn13:
+          (document.getElementById('isbn13') as HTMLInputElement).value.trim() ||
+          undefined,
+        asin:
+          (document.getElementById('asin') as HTMLInputElement).value.trim() || undefined,
         amazonId:
-          (document.getElementById('amazonId') as HTMLInputElement).value.trim() || undefined,
+          (document.getElementById('amazonId') as HTMLInputElement).value.trim() ||
+          undefined,
         goodreadsId:
-          (document.getElementById('goodreadsId') as HTMLInputElement).value.trim() || undefined,
+          (document.getElementById('goodreadsId') as HTMLInputElement).value.trim() ||
+          undefined,
       },
       publisher: publisher || undefined,
       publishDate: publishDate || undefined,
@@ -251,12 +476,19 @@ class PopupController {
     if (this.markFinishedInput?.checked && this.addToLibraryInput) {
       this.addToLibraryInput.checked = true;
     }
-    if (this.markFinishedInput?.checked && this.finishedDateInput && !this.finishedDateInput.value) {
-      this.finishedDateInput.value = this.formatDate(new Date());
+    if (
+      this.markFinishedInput?.checked &&
+      this.finishedDateInput &&
+      !this.finishedDateInput.value
+    ) {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = `${today.getMonth() + 1}`.padStart(2, '0');
+      const dd = `${today.getDate()}`.padStart(2, '0');
+      this.finishedDateInput.value = `${yyyy}-${mm}-${dd}`;
     }
     this.updateFinishedDateVisibility();
-    this.syncCalendarCursor();
-    this.renderCalendar();
+    this.finishedDatePicker.render();
   }
 
   private updateFinishedDateVisibility() {
@@ -266,164 +498,30 @@ class PopupController {
     const shouldShow = this.markFinishedInput?.checked ?? false;
     this.finishedDateWrapper.classList.toggle('hidden', !shouldShow);
     if (!shouldShow) {
-      this.toggleCalendar(false);
+      this.finishedDatePicker.hide();
     }
-  }
-
-  private toggleCalendar(show: boolean = !this.calendarVisible) {
-    if (!this.calendarContainer) {
-      return;
-    }
-    this.calendarVisible = show;
-    this.calendarContainer.classList.toggle('hidden', !show);
-    if (show) {
-      this.renderCalendar();
-    }
-  }
-
-  private shiftCalendar(delta: number) {
-    this.calendarCursor = new Date(
-      this.calendarCursor.getFullYear(),
-      this.calendarCursor.getMonth() + delta,
-      1,
-    );
-    this.renderCalendar();
-  }
-
-  private handleYearSelect() {
-    if (!this.calendarYearSelect) {
-      return;
-    }
-    const year = Number(this.calendarYearSelect.value);
-    if (!Number.isFinite(year)) {
-      return;
-    }
-    this.calendarCursor = new Date(year, this.calendarCursor.getMonth(), 1);
-    this.renderCalendar();
-  }
-
-  private syncCalendarCursor() {
-    const parsed = this.parseDate(this.finishedDateInput?.value);
-    if (parsed) {
-      this.calendarCursor = new Date(parsed.getFullYear(), parsed.getMonth(), 1);
-    }
-  }
-
-  private renderCalendar() {
-    if (!this.calendarGrid || !this.calendarMonthLabel || !this.finishedDateInput) {
-      return;
-    }
-    const base = new Date(
-      this.calendarCursor.getFullYear(),
-      this.calendarCursor.getMonth(),
-      1,
-    );
-    const locale = navigator.language || 'en-US';
-    this.calendarMonthLabel.textContent = base.toLocaleDateString(locale, {
-      month: 'long',
-    });
-    this.buildYearOptions(base.getFullYear());
-    const currentValue = this.finishedDateInput.value;
-    const currentParsed = this.parseDate(currentValue);
-    const daysInMonth = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
-    const firstDay = base.getDay();
-
-    const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-    this.calendarGrid.textContent = '';
-
-    weekdays.forEach((day) => {
-      const div = document.createElement('div');
-      div.className = 'weekday';
-      div.textContent = day;
-      this.calendarGrid.append(div);
-    });
-
-    for (let i = 0; i < firstDay; i += 1) {
-      const spacer = document.createElement('div');
-      spacer.className = 'empty';
-      this.calendarGrid.append(spacer);
-    }
-
-    for (let day = 1; day <= daysInMonth; day += 1) {
-      const date = new Date(base.getFullYear(), base.getMonth(), day);
-      const formatted = this.formatDate(date);
-      const isCurrent = currentParsed
-        ? date.toDateString() === currentParsed.toDateString()
-        : false;
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.dataset.date = formatted;
-      button.dataset.current = String(isCurrent);
-      button.textContent = String(day);
-      this.calendarGrid.append(button);
-    }
-
-    Array.from(this.calendarGrid.querySelectorAll('button[data-date]')).forEach((button) => {
-      button.addEventListener('click', () => {
-        const value = button.getAttribute('data-date');
-        if (value && this.finishedDateInput) {
-          this.finishedDateInput.value = value;
-          this.toggleCalendar(false);
-        }
-      });
-    });
   }
 
   private handleCalendarBlur(event: MouseEvent) {
-    if (!this.calendarVisible) {
-      return;
-    }
     const target = event.target as HTMLElement;
-    if (
-      this.calendarContainer?.contains(target) ||
-      this.calendarToggleBtn?.contains(target) ||
-      this.finishedDateWrapper?.contains(target)
-    ) {
-      return;
+
+    // Check if click is outside both date pickers
+    if (this.finishedDatePicker.isVisible()) {
+      if (
+        !this.finishedDatePicker.contains(target) &&
+        !this.finishedDateWrapper?.contains(target)
+      ) {
+        this.finishedDatePicker.hide();
+      }
     }
-    this.toggleCalendar(false);
+
+    if (this.publishDatePicker.isVisible()) {
+      if (!this.publishDatePicker.contains(target)) {
+        this.publishDatePicker.hide();
+      }
+    }
   }
 
-  private parseDate(value?: string): Date | null {
-    if (!value) {
-      return null;
-    }
-    const [year, month, day] = value.split('-').map((part) => Number(part));
-    if (!year || !month || !day) {
-      return null;
-    }
-    const date = new Date(year, month - 1, day);
-    if (Number.isNaN(date.getTime())) {
-      return null;
-    }
-    return date;
-  }
-
-  private formatDate(date: Date): string {
-    const yyyy = date.getFullYear();
-    const mm = `${date.getMonth() + 1}`.padStart(2, '0');
-    const dd = `${date.getDate()}`.padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  private buildYearOptions(selectedYear: number) {
-    if (!this.calendarYearSelect) {
-      return;
-    }
-    const nowYear = new Date().getFullYear();
-    const range = 40;
-    const minYear = Math.max(1900, Math.min(selectedYear, nowYear) - range);
-    const maxYear = Math.max(selectedYear, nowYear) + 2;
-    this.calendarYearSelect.textContent = '';
-    for (let year = minYear; year <= maxYear; year += 1) {
-      const option = document.createElement('option');
-      option.value = String(year);
-      option.selected = year === selectedYear;
-      option.textContent = String(year);
-      this.calendarYearSelect.append(option);
-    }
-    this.calendarYearSelect.value = String(selectedYear);
-  }
   private updateCoverPreview(src?: string) {
     if (src && this.coverPreviewImage) {
       this.coverPreviewImage.src = src;

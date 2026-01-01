@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -51,7 +51,53 @@
           </label>
           <label>
             Publish Date
-            <input type="date" name="publishDate" id="publish-date" />
+            <div class="date-picker-input">
+              <input
+                type="text"
+                id="publish-date"
+                name="publishDate"
+                inputmode="numeric"
+                placeholder="YYYY-MM-DD"
+                pattern="\d{4}-\d{2}-\d{2}"
+                autocomplete="off"
+              />
+              <button
+                type="button"
+                id="publish-date-picker"
+                class="icon-button"
+                aria-label="Open calendar"
+              >
+                <span aria-hidden="true">📅</span>
+              </button>
+            </div>
+            <div
+              id="publish-date-calendar"
+              class="date-picker hidden"
+              role="dialog"
+              aria-modal="false"
+            >
+              <div class="date-picker-header">
+                <button
+                  type="button"
+                  class="icon-button"
+                  id="publish-calendar-prev"
+                  aria-label="Previous month"
+                >
+                  ‹
+                </button>
+                <span id="publish-calendar-month"></span>
+                <select id="publish-calendar-year" aria-label="Select year"></select>
+                <button
+                  type="button"
+                  class="icon-button"
+                  id="publish-calendar-next"
+                  aria-label="Next month"
+                >
+                  ›
+                </button>
+              </div>
+              <div class="date-picker-grid" id="publish-calendar-grid"></div>
+            </div>
           </label>
           <label>
             Page Count
@@ -87,16 +133,40 @@
                 pattern="\d{4}-\d{2}-\d{2}"
                 autocomplete="off"
               />
-              <button type="button" id="finished-date-picker" class="icon-button" aria-label="Open calendar">
+              <button
+                type="button"
+                id="finished-date-picker"
+                class="icon-button"
+                aria-label="Open calendar"
+              >
                 <span aria-hidden="true">📅</span>
               </button>
             </div>
-            <div id="finished-date-calendar" class="date-picker hidden" role="dialog" aria-modal="false">
+            <div
+              id="finished-date-calendar"
+              class="date-picker hidden"
+              role="dialog"
+              aria-modal="false"
+            >
               <div class="date-picker-header">
-                <button type="button" class="icon-button" id="calendar-prev" aria-label="Previous month">‹</button>
+                <button
+                  type="button"
+                  class="icon-button"
+                  id="calendar-prev"
+                  aria-label="Previous month"
+                >
+                  ‹
+                </button>
                 <span id="calendar-month"></span>
                 <select id="calendar-year" aria-label="Select year"></select>
-                <button type="button" class="icon-button" id="calendar-next" aria-label="Next month">›</button>
+                <button
+                  type="button"
+                  class="icon-button"
+                  id="calendar-next"
+                  aria-label="Next month"
+                >
+                  ›
+                </button>
               </div>
               <div class="date-picker-grid" id="calendar-grid"></div>
             </div>
