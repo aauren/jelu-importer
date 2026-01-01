@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/aauren/jelu-importer/compare/v1.7.0...v1.7.1) (2026-01-01)
+
+
+### Bug Fixes
+
+* use semantic-release action for proper GitHub Actions outputs ([719e851](https://github.com/aauren/jelu-importer/commit/719e85185044c4c54decf6fe04f77ccac00aa069))
+
 # [1.7.0](https://github.com/aauren/jelu-importer/compare/v1.6.0...v1.7.0) (2026-01-01)
 
 
