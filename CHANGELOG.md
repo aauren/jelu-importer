@@ -1,3 +1,10 @@
+## [1.7.4](https://github.com/aauren/jelu-importer/compare/v1.7.3...v1.7.4) (2026-01-01)
+
+
+### Bug Fixes
+
+* **release.yml:** specify exact firefox release name ([c6a6110](https://github.com/aauren/jelu-importer/commit/c6a611069edf018e26ae262914870476bcf310e1))
+
 ## [1.7.3](https://github.com/aauren/jelu-importer/compare/v1.7.2...v1.7.3) (2026-01-01)
 
 
