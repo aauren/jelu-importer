@@ -1,3 +1,10 @@
+## [1.7.2](https://github.com/aauren/jelu-importer/compare/v1.7.1...v1.7.2) (2026-01-01)
+
+
+### Bug Fixes
+
+* firefox and chrome publish release ([b28f25b](https://github.com/aauren/jelu-importer/commit/b28f25b7b376d42981822f1c5fa786c573eccd50))
+
 ## [1.7.1](https://github.com/aauren/jelu-importer/compare/v1.7.0...v1.7.1) (2026-01-01)
 
 
