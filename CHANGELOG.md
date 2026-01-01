@@ -1,3 +1,15 @@
+# [1.7.0](https://github.com/aauren/jelu-importer/compare/v1.6.0...v1.7.0) (2026-01-01)
+
+
+### Bug Fixes
+
+* typecheck errors ([0c33ee5](https://github.com/aauren/jelu-importer/commit/0c33ee591c5c1b5d53d3ed8352612633cd088ad5))
+
+
+### Features
+
+* update release flows for GitHub Actions ([cfa0c64](https://github.com/aauren/jelu-importer/commit/cfa0c648eea86d75a198e0433fb6813d717669b2))
+
 # [1.6.0](https://github.com/aauren/jelu-importer/compare/v1.5.4...v1.6.0) (2026-01-01)
 
 
