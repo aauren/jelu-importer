@@ -9,34 +9,146 @@ on:
       - 'docs/**'
       - '.github/**'
       - '.gitignore'
+  workflow_dispatch:
 
 jobs:
-  release:
+  lint:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - name: Do a Clean Install
-        run: npm ci
-      - name: Run Linting Steps
-        run: npm run lint
-      - name: Run Unit Tests
-        run: npm test
+      - run: npm ci
+      - run: npm run lint
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  build:
+    needs: [lint, typecheck, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: built-extension
+          path: |
+            dist/
+            dist-chrome/
+          retention-days: 90
+
+  release-and-package:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      release-created: ${{ steps.release.outputs.release-created }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: built-extension
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - name: Run Semantic Release
+        id: release
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package Extensions
+        if: steps.release.outputs.release-created == 'true'
+        run: |
+          npx web-ext build --source-dir dist --artifacts-dir artifacts/firefox
+          npx web-ext build --source-dir dist-chrome --artifacts-dir artifacts/chrome
+          node ./scripts/rename-artifacts.mjs
+      - uses: actions/upload-artifact@v4
+        if: steps.release.outputs.release-created == 'true'
+        with:
+          name: packaged-firefox
+          path: artifacts/firefox/
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: steps.release.outputs.release-created == 'true'
+        with:
+          name: packaged-chrome
+          path: artifacts/chrome/
+          retention-days: 90
+      - name: Attach Chrome ZIP to GitHub Release
+        if: steps.release.outputs.release-created == 'true'
+        run: gh release upload v${{ steps.release.outputs.version }} artifacts/chrome/*.zip --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-firefox:
+    needs: release-and-package
+    if: needs.release-and-package.outputs.release-created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: packaged-firefox
+          path: artifacts/firefox
       - name: Sign Add-On via AMO
-        run: npx web-ext sign --source-dir dist --artifacts-dir artifacts/signed --channel listed
+        run: npx web-ext sign --source-dir artifacts/firefox --artifacts-dir artifacts/signed --channel listed
         env:
           WEB_EXT_API_KEY: ${{ secrets.AMO_ISSUER }}
           WEB_EXT_API_SECRET: ${{ secrets.AMO_SECRET }}
       - name: Attach Signed XPI to GitHub Release
-        run: gh release upload $(git describe --tags --abbrev=0) artifacts/signed/*.xpi --clobber
+        run: gh release upload v${{ needs.release-and-package.outputs.version }} artifacts/signed/*.xpi --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-chrome:
+    needs: release-and-package
+    if: needs.release-and-package.outputs.release-created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: packaged-chrome
+          path: artifacts/chrome
+      - name: Upload to Chrome Web Store
+        continue-on-error: true
+        run: |
+          npx chrome-webstore-upload-cli@latest upload \
+            --source artifacts/chrome/*.zip \
+            --extension-id ${{ secrets.CHROME_EXTENSION_ID }} \
+            --client-id ${{ secrets.CHROME_CLIENT_ID }} \
+            --client-secret ${{ secrets.CHROME_CLIENT_SECRET }} \
+            --refresh-token ${{ secrets.CHROME_REFRESH_TOKEN }} \
+            --auto-publish
