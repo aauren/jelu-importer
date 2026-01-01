@@ -1,3 +1,18 @@
+# [1.6.0](https://github.com/aauren/jelu-importer/compare/v1.5.4...v1.6.0) (2026-01-01)
+
+
+### Bug Fixes
+
+* **base.json:** match www subdomain variants and non-www subdomain variants ([81d72a2](https://github.com/aauren/jelu-importer/commit/81d72a281ca840ec3f4f61a43ddd76c79d55f5df))
+* **base.json:** remove tabs permission as its not needed to read current tab ([20a7297](https://github.com/aauren/jelu-importer/commit/20a7297a06f0a4c1a36376417542d4b5fd3df382))
+
+
+### Features
+
+* add autocomplete for some fields when user types ([473afcf](https://github.com/aauren/jelu-importer/commit/473afcffcf43a891eeacecabc41fa874a3011628))
+* **options:** add test connection button ([5e00373](https://github.com/aauren/jelu-importer/commit/5e0037316e365e765cac7094459c10087d01451d))
+* use consistent date picker across all date fields ([cbb3139](https://github.com/aauren/jelu-importer/commit/cbb31399900fc464331c0a823dc9532f24203403))
+
 ## [1.5.4](https://github.com/aauren/jelu-importer/compare/v1.5.3...v1.5.4) (2025-12-12)
 
 
