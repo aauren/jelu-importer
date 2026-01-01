@@ -121,10 +121,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: packaged-firefox
-          path: artifacts/firefox
+          name: built-extension
       - name: Sign Add-On via AMO
-        run: npx web-ext sign --source-dir artifacts/firefox --artifacts-dir artifacts/signed --channel listed
+        run: npx web-ext sign --source-dir dist --artifacts-dir artifacts/signed --channel listed
         env:
           WEB_EXT_API_KEY: ${{ secrets.AMO_ISSUER }}
           WEB_EXT_API_SECRET: ${{ secrets.AMO_SECRET }}
@@ -145,8 +144,9 @@ jobs:
       - name: Upload to Chrome Web Store
         continue-on-error: true
         run: |
+          ZIP_FILE=$(find artifacts/chrome -name "*.zip" -print -quit)
           npx chrome-webstore-upload-cli@latest upload \
-            --source artifacts/chrome/*.zip \
+            --source "$ZIP_FILE" \
             --extension-id ${{ secrets.CHROME_EXTENSION_ID }} \
             --client-id ${{ secrets.CHROME_CLIENT_ID }} \
             --client-secret ${{ secrets.CHROME_CLIENT_SECRET }} \
