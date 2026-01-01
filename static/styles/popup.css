@@ -1,5 +1,10 @@
 :root {
-  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   color: #111;
 }
 
@@ -220,4 +225,58 @@ label.checkbox input[type='checkbox'] {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Autocomplete styles */
+.autocomplete-container {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-height: 200px; /* 5 items × 40px */
+  overflow-y: hidden;
+  margin-top: 2px;
+}
+
+.autocomplete-item {
+  height: 40px;
+  padding: 0 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #ececec;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #111;
+  transition: background-color 0.1s ease;
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover {
+  background-color: #f7f9ff;
+}
+
+.autocomplete-item.highlighted {
+  background-color: #e3f2fd;
+  color: #1771f1;
+}
+
+.autocomplete-empty {
+  padding: 12px;
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-style: italic;
+  text-align: center;
 }

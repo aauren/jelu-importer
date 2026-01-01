@@ -1,6 +1,8 @@
 import browser from 'webextension-polyfill';
 import { BookImportPayload, ScrapedBook, StoredOptions } from '../types/book';
 import { getOptions } from '../common/storage';
+import { AutocompleteService } from '../common/autocomplete';
+import { AutocompleteController } from './autocomplete';
 
 function csvToArray(value: string): string[] {
   return value
@@ -243,6 +245,8 @@ class PopupController {
   private options: StoredOptions | null = null;
   private finishedDatePicker: DatePicker;
   private publishDatePicker: DatePicker;
+  private autocompleteService: AutocompleteService | null = null;
+  private autocompleteControllers: AutocompleteController[] = [];
 
   constructor() {
     this.finishedDatePicker = new DatePicker(
@@ -301,11 +305,56 @@ class PopupController {
       }
       this.book = scraped;
       this.populateForm(scraped);
+      this.initAutocomplete();
       this.editorEl.classList.remove('hidden');
       this.setStatus('Review the data and send it to Jelu.');
     } catch (error) {
       console.error('Failed to scrape page', error);
       this.setStatus('Could not gather book information from this page.', 'error');
+    }
+  }
+
+  private initAutocomplete() {
+    // Check if Jelu is configured with credentials
+    if (!this.options?.jeluUrl || !this.options?.username || !this.options?.password) {
+      // Silently skip autocomplete if not configured
+      return;
+    }
+
+    this.autocompleteService = new AutocompleteService(this.options);
+
+    // Define fields with their fetch functions
+    const fields = [
+      {
+        id: 'book-authors',
+        fetch: (q: string) => this.autocompleteService!.fetchAuthors(q),
+      },
+      {
+        id: 'book-narrators',
+        fetch: (q: string) => this.autocompleteService!.fetchAuthors(q, 'NARRATOR'),
+      },
+      {
+        id: 'book-tags',
+        fetch: (q: string) => this.autocompleteService!.fetchTags(q),
+      },
+      {
+        id: 'series-name',
+        fetch: (q: string) => this.autocompleteService!.fetchSeries(q),
+      },
+      {
+        id: 'publisher',
+        fetch: (q: string) => this.autocompleteService!.fetchPublishers(q),
+      },
+    ];
+
+    // Attach autocomplete to each field
+    for (const field of fields) {
+      const input = document.getElementById(field.id) as HTMLInputElement;
+      if (input) {
+        const controller = new AutocompleteController(input, field.fetch);
+        controller.attach();
+        this.autocompleteControllers.push(controller);
+      }
     }
   }
 
