@@ -117,13 +117,20 @@ jobs:
     needs: release-and-package
     if: needs.release-and-package.outputs.release-created == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: built-extension
+          name: packaged-firefox
+          path: artifacts/firefox
+      - name: Extract ZIP for signing
+        run: |
+          mkdir -p dist-signing
+          unzip -q artifacts/firefox/*.zip -d dist-signing
       - name: Sign Add-On via AMO
-        run: npx web-ext sign --source-dir dist --artifacts-dir artifacts/signed --channel listed
+        run: npx web-ext sign --source-dir dist-signing --artifacts-dir artifacts/signed --channel listed
         env:
           WEB_EXT_API_KEY: ${{ secrets.AMO_ISSUER }}
           WEB_EXT_API_SECRET: ${{ secrets.AMO_SECRET }}
