@@ -107,11 +107,6 @@ jobs:
           name: packaged-chrome
           path: artifacts/chrome/
           retention-days: 90
-      - name: Attach Chrome ZIP to GitHub Release
-        if: steps.release.outputs.new_release_published == 'true'
-        run: gh release upload v${{ steps.release.outputs.new_release_version }} artifacts/chrome/*.zip --clobber
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-firefox:
     needs: release-and-package
