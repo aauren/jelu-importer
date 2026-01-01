@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jelu Importer",
   "description": "Scrape book metadata from major catalog sites and import into your self-hosted Jelu instance.",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "action": {
     "default_popup": "popup.html",
     "default_title": "Import book into Jelu"

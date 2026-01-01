@@ -1,3 +1,10 @@
+## [1.7.3](https://github.com/aauren/jelu-importer/compare/v1.7.2...v1.7.3) (2026-01-01)
+
+
+### Bug Fixes
+
+* **release.yml:** add GH release perms & update FF version ([4d61cd9](https://github.com/aauren/jelu-importer/commit/4d61cd91403018e1b7706257c4261e3ae979d2e8))
+
 ## [1.7.2](https://github.com/aauren/jelu-importer/compare/v1.7.1...v1.7.2) (2026-01-01)
 
 
