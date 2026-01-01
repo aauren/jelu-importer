@@ -17,9 +17,12 @@
   "permissions": ["storage", "activeTab", "notifications"],
   "host_permissions": [
     "*://www.goodreads.com/*",
+    "*://goodreads.com/*",
     "*://*.amazon.com/*",
     "*://books.google.com/*",
+    "*://www.books.google.com/*",
     "*://www.google.com/books/*",
+    "*://google.com/books/*",
     "*://*.audible.com/*",
     "https://www.googleapis.com/*"
   ],
@@ -32,9 +35,12 @@
     {
       "matches": [
         "*://www.goodreads.com/*",
+        "*://goodreads.com/*",
         "*://*.amazon.com/*",
         "*://books.google.com/*",
+        "*://www.books.google.com/*",
         "*://www.google.com/books/*",
+        "*://google.com/books/*",
         "*://*.audible.com/*"
       ],
       "js": ["contentScript.js"],
