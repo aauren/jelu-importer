@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -11,9 +11,10 @@
     <main class="options">
       <h1>Jelu Importer Settings</h1>
       <p class="notice">
-        Credentials are stored using Firefox local storage and are <strong>not encrypted</strong>.
-        Create a dedicated, low-privilege Jelu account if possible (note if you create an account that is separate
-		from your primary account the "My Library" parts of the importer will not function correctly).
+        Credentials are stored using Firefox local storage and are
+        <strong>not encrypted</strong>. Create a dedicated, low-privilege Jelu account if
+        possible (note if you create an account that is separate from your primary account
+        the "My Library" parts of the importer will not function correctly).
       </p>
       <form id="options-form">
         <label>
@@ -40,9 +41,13 @@
           <input type="checkbox" id="enable-logging" />
           Enable verbose logging (console)
         </label>
-        <button type="submit">Save Settings</button>
+        <div class="button-group">
+          <button type="submit">Save Settings</button>
+          <button type="button" id="test-connection">Test Server Connection</button>
+        </div>
       </form>
       <p id="save-status" class="status" role="status"></p>
+      <div id="test-status" class="test-status hidden" role="status"></div>
     </main>
     <script type="module" src="options.js"></script>
   </body>
