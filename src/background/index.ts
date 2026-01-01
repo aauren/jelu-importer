@@ -1,7 +1,8 @@
 import browser from 'webextension-polyfill';
+import { BookImportPayload } from '../types/book';
+import { RuntimeMessage } from '../types/messages';
 import { getOptions } from '../common/storage';
 import { JeluClient } from '../common/jeluClient';
-import { BookImportPayload } from '../types/book';
 
 async function notify(title: string, message: string) {
   if (!browser.notifications) {
@@ -27,9 +28,10 @@ async function handleImport(payload: BookImportPayload): Promise<void> {
   await client.importBook(payload);
 }
 
-browser.runtime.onMessage.addListener((message) => {
-  if (message?.type === 'IMPORT_BOOK') {
-    const payload = message.payload as BookImportPayload;
+browser.runtime.onMessage.addListener((message: unknown) => {
+  const msg = message as RuntimeMessage;
+  if (msg?.type === 'IMPORT_BOOK') {
+    const payload = msg.payload;
     return handleImport(payload)
       .then(() => notify('Jelu Importer', 'Book imported successfully.'))
       .catch((error: Error) => {
