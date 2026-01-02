@@ -45,6 +45,13 @@ Screenshots will be added once the UI is ready.
 4. Open the extension options page to configure your Jelu server URL, port, and authentication details before importing
    any books.
 
+### Install in Google Chrome from Chrome Web Store
+
+1. Open [Jelu Importer on the Chrome Web Store](https://chromewebstore.google.com/detail/elfmiakdnfjpdmhmkkbcnblkgdbfmdad?utm_source=item-share-cb) in Chrome
+2. Click `Add to Chrome`
+3. Read permissions dialog and click `Add extension`
+4. Pin the extension and configure it via the options page (Chrome > Extensions > Details > Extension options)
+
 ### Install in Google Chrome from GitHub Release
 
 1. Download the Chrome ZIP artifact from the latest GitHub Release and extract it.
