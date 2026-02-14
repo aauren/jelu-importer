@@ -151,3 +151,89 @@ summary {
 .details label {
   margin-left: 1rem;
 }
+
+/* Auth method selection */
+.auth-method-fieldset {
+  border: 1px solid #cbd5f5;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin: 0;
+}
+
+.auth-method-fieldset legend {
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0 0.5rem;
+}
+
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.radio-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.radio-label input[type='radio'] {
+  width: auto;
+  cursor: pointer;
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+/* Scope info box */
+.scope-info {
+  background: #f0f9ff;
+  border-left: 4px solid #0ea5e9;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.scope-info strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #0c4a6e;
+}
+
+.scope-info ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.scope-info li {
+  margin: 0.25rem 0;
+  color: #0c4a6e;
+}
+
+.scope-info code {
+  background: #e0f2fe;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.85rem;
+  color: #075985;
+}
+
+/* Status message variations */
+.status.success {
+  color: #065f46;
+}
+
+.status.error {
+  color: #991b1b;
+}

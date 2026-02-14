@@ -43,6 +43,14 @@ export class AutocompleteService {
   constructor(private readonly options: StoredOptions) {}
 
   private buildAuthHeaders(): Record<string, string> {
+    if (this.options.authMethod === 'token') {
+      if (this.options.apiToken) {
+        return { Authorization: `Bearer ${this.options.apiToken}` };
+      }
+      throw new Error('API token not configured');
+    }
+
+    // Default to basic auth for backward compatibility
     if (this.options.username && this.options.password) {
       const encoded = btoa(`${this.options.username}:${this.options.password}`);
       return { Authorization: `Basic ${encoded}` };
