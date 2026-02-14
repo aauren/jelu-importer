@@ -13,10 +13,18 @@ class OptionsController {
   private status = document.getElementById('save-status') as HTMLElement;
   private testButton = document.getElementById('test-connection') as HTMLButtonElement;
   private testStatus = document.getElementById('test-status') as HTMLElement;
+  private authBasicRadio = document.getElementById('auth-basic') as HTMLInputElement;
+  private authTokenRadio = document.getElementById('auth-token') as HTMLInputElement;
+  private basicAuthFields = document.getElementById('basicAuthFields') as HTMLElement;
+  private tokenAuthFields = document.getElementById('tokenAuthFields') as HTMLElement;
+  private apiTokenInput = document.getElementById('api-token') as HTMLInputElement;
+  private storedToken: string | undefined;
 
   constructor() {
     this.form?.addEventListener('submit', (event) => this.handleSubmit(event));
     this.testButton?.addEventListener('click', () => this.handleTestConnection());
+    this.authBasicRadio?.addEventListener('change', () => this.toggleAuthFields());
+    this.authTokenRadio?.addEventListener('change', () => this.toggleAuthFields());
   }
 
   async init() {
@@ -24,26 +32,99 @@ class OptionsController {
     this.populateForm(options);
   }
 
+  private toggleAuthFields() {
+    const isBasicAuth = this.authBasicRadio?.checked;
+
+    if (this.basicAuthFields && this.tokenAuthFields) {
+      this.basicAuthFields.style.display = isBasicAuth ? 'block' : 'none';
+      this.tokenAuthFields.style.display = isBasicAuth ? 'none' : 'block';
+    }
+
+    // Update required attributes
+    const usernameInput = document.getElementById('username') as HTMLInputElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+
+    if (usernameInput && passwordInput) {
+      usernameInput.required = isBasicAuth;
+      passwordInput.required = isBasicAuth;
+    }
+
+    if (this.apiTokenInput) {
+      this.apiTokenInput.required = !isBasicAuth;
+    }
+  }
+
   private populateForm(options: StoredOptions) {
     (document.getElementById('jelu-url') as HTMLInputElement).value = options.jeluUrl;
+
+    // Set auth method radio buttons
+    const authMethod = options.authMethod || 'basic';
+    if (authMethod === 'token') {
+      this.authTokenRadio.checked = true;
+    } else {
+      this.authBasicRadio.checked = true;
+    }
+
+    // Set basic auth fields
     (document.getElementById('username') as HTMLInputElement).value =
       options.username ?? '';
     (document.getElementById('password') as HTMLInputElement).value =
       options.password ?? '';
+
+    // Store the token but show placeholder if it exists
+    this.storedToken = options.apiToken;
+    if (options.apiToken) {
+      this.apiTokenInput.value = '';
+      this.apiTokenInput.placeholder = '••••••••••••••••••••••••••••••••••••';
+      this.apiTokenInput.dataset.hasToken = 'true';
+    } else {
+      this.apiTokenInput.placeholder = 'jelu_...';
+      delete this.apiTokenInput.dataset.hasToken;
+    }
+
     (document.getElementById('default-tags') as HTMLInputElement).value =
       options.defaultTags.join(', ');
     (document.getElementById('default-add-to-library') as HTMLInputElement).checked =
       options.defaultAddToLibrary ?? false;
     (document.getElementById('enable-logging') as HTMLInputElement).checked =
       options.enableLogging ?? false;
+
+    // Toggle field visibility based on auth method
+    this.toggleAuthFields();
   }
 
   private async handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     const data = this.getFormData();
+
+    // Validate token format if using token auth
+    if (data.authMethod === 'token' && data.apiToken) {
+      if (!this.isValidTokenFormat(data.apiToken)) {
+        this.status.textContent =
+          "Invalid token format. Token must start with 'jelu_' followed by 32 hexadecimal characters.";
+        this.status.className = 'status error';
+        setTimeout(() => {
+          this.status.textContent = '';
+          this.status.className = 'status';
+        }, 5000);
+        return;
+      }
+    }
+
     await saveOptions(data);
     this.status.textContent = 'Settings saved.';
-    setTimeout(() => (this.status.textContent = ''), 2500);
+    this.status.className = 'status success';
+    setTimeout(() => {
+      this.status.textContent = '';
+      this.status.className = 'status';
+    }, 2500);
+  }
+
+  private isValidTokenFormat(token: string): boolean {
+    if (!token.startsWith('jelu_')) return false;
+    const hexPart = token.slice(5);
+    if (hexPart.length !== 32) return false;
+    return /^[0-9a-f]+$/.test(hexPart);
   }
 
   private getFormData(): StoredOptions {
@@ -54,10 +135,27 @@ class OptionsController {
       .map((tag) => tag.trim())
       .filter(Boolean);
 
+    const authMethod = this.authTokenRadio.checked ? 'token' : 'basic';
+
     const username = (
       document.getElementById('username') as HTMLInputElement
     ).value.trim();
     const password = (document.getElementById('password') as HTMLInputElement).value;
+
+    // Handle API token - preserve existing token if input is empty and token exists
+    let apiToken: string | undefined;
+    const tokenInputValue = this.apiTokenInput.value.trim();
+    if (tokenInputValue) {
+      // New token entered
+      apiToken = tokenInputValue;
+    } else if (this.apiTokenInput.dataset.hasToken === 'true') {
+      // No new input, preserve existing token
+      apiToken = this.storedToken;
+    } else {
+      // No token
+      apiToken = undefined;
+    }
+
     const defaultAddToLibrary = (
       document.getElementById('default-add-to-library') as HTMLInputElement
     ).checked;
@@ -66,8 +164,10 @@ class OptionsController {
 
     return {
       jeluUrl: (document.getElementById('jelu-url') as HTMLInputElement).value.trim(),
+      authMethod,
       username: username || undefined,
       password: password || undefined,
+      apiToken,
       defaultTags: tags,
       defaultAddToLibrary,
       enableLogging,
@@ -138,7 +238,19 @@ class OptionsController {
       return result;
     }
 
-    // Test 2: Check credentials
+    // Test 2: Check authentication based on method
+    if (options.authMethod === 'token') {
+      return this.testTokenAuth(baseUrl, options, result);
+    } else {
+      return this.testBasicAuth(baseUrl, options, result);
+    }
+  }
+
+  private async testBasicAuth(
+    baseUrl: string,
+    options: StoredOptions,
+    result: TestResult,
+  ): Promise<TestResult> {
     if (!options.username || !options.password) {
       result.credentialsValid = false;
       result.credentialsMessage = 'Username and password are required.';
@@ -169,6 +281,66 @@ class OptionsController {
     } catch (error) {
       result.credentialsValid = false;
       result.credentialsMessage = `Failed to test credentials: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    }
+
+    return result;
+  }
+
+  private async testTokenAuth(
+    baseUrl: string,
+    options: StoredOptions,
+    result: TestResult,
+  ): Promise<TestResult> {
+    if (!options.apiToken) {
+      result.credentialsValid = false;
+      result.credentialsMessage = 'API token is required.';
+      return result;
+    }
+
+    // Validate token format
+    if (!this.isValidTokenFormat(options.apiToken)) {
+      result.credentialsValid = false;
+      result.credentialsMessage =
+        "Invalid token format. Token must start with 'jelu_' followed by 32 hexadecimal characters.";
+      return result;
+    }
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${options.apiToken}`,
+    };
+
+    const missingScopes: string[] = [];
+
+    // Test books:read scope
+    try {
+      const response = await fetch(`${baseUrl}/api/v1/authors?size=1`, { headers });
+
+      if (response.status === 401) {
+        result.credentialsValid = false;
+        result.credentialsMessage = 'Invalid or expired API token.';
+        return result;
+      } else if (response.status === 403) {
+        missingScopes.push('books:read');
+      } else if (!response.ok) {
+        result.credentialsValid = false;
+        result.credentialsMessage = `Unexpected response (${response.status}). Unable to verify token.`;
+        return result;
+      }
+    } catch (error) {
+      result.credentialsValid = false;
+      result.credentialsMessage = `Failed to test token: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      return result;
+    }
+
+    // Report results
+    if (missingScopes.length > 0) {
+      result.credentialsValid = false;
+      result.credentialsMessage = `Token is missing required scope: ${missingScopes.join(', ')}. Autocomplete will not work.`;
+    } else {
+      result.credentialsValid = true;
+      result.credentialsMessage =
+        'Token is valid! Note: books:write and reading:write scopes cannot be validated without creating data.';
     }
 
     return result;

@@ -21,14 +21,57 @@
           Jelu Base URL (e.g. https://jelu.example.com)
           <input type="url" id="jelu-url" required />
         </label>
-        <label>
-          Username
-          <input type="text" id="username" autocomplete="username" required />
-        </label>
-        <label>
-          Password
-          <input type="password" id="password" autocomplete="current-password" required />
-        </label>
+
+        <fieldset class="auth-method-fieldset">
+          <legend>Authentication Method</legend>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input
+                type="radio"
+                name="authMethod"
+                value="basic"
+                id="auth-basic"
+                checked
+              />
+              Username &amp; Password
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="authMethod" value="token" id="auth-token" />
+              API Token
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="basicAuthFields">
+          <label>
+            Username
+            <input type="text" id="username" autocomplete="username" />
+          </label>
+          <label>
+            Password
+            <input type="password" id="password" autocomplete="current-password" />
+          </label>
+        </div>
+
+        <div id="tokenAuthFields" style="display: none">
+          <label>
+            API Token
+            <input type="password" id="api-token" placeholder="jelu_..." />
+            <small class="field-hint"
+              >Token is write-only and cannot be revealed after saving</small
+            >
+          </label>
+
+          <div class="scope-info">
+            <strong>Required Scopes:</strong>
+            <ul>
+              <li><code>books:read</code> - For autocomplete functionality</li>
+              <li><code>books:write</code> - For creating standalone books</li>
+              <li><code>reading:write</code> - For adding books to your library</li>
+            </ul>
+          </div>
+        </div>
+
         <label>
           Default Tags (comma separated)
           <input type="text" id="default-tags" />

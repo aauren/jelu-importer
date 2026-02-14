@@ -59,6 +59,14 @@ export class JeluClient {
   constructor(private readonly options: StoredOptions) {}
 
   private buildAuthHeaders(): Record<string, string> {
+    if (this.options.authMethod === 'token') {
+      if (this.options.apiToken) {
+        return { Authorization: `Bearer ${this.options.apiToken}` };
+      }
+      throw new Error('API token not configured. Add your token in the options page.');
+    }
+
+    // Default to basic auth for backward compatibility
     if (this.options.username && this.options.password) {
       const encoded = btoa(`${this.options.username}:${this.options.password}`);
       return { Authorization: `Basic ${encoded}` };
@@ -109,7 +117,9 @@ export class JeluClient {
       borrowed: false,
       percentRead: isFinished ? 100 : undefined,
       lastReadingEvent: isFinished ? 'FINISHED' : undefined,
-      lastReadingEventDate: isFinished ? finishedDate ?? new Date().toISOString() : undefined,
+      lastReadingEventDate: isFinished
+        ? (finishedDate ?? new Date().toISOString())
+        : undefined,
     };
 
     const response = await fetch(`${baseUrl}/api/v1/userbooks`, {
@@ -152,11 +162,7 @@ export class JeluClient {
       return undefined;
     }
     const unique = Array.from(
-      new Set(
-        names
-          .map((name) => name.trim())
-          .filter((name) => Boolean(name)),
-      ),
+      new Set(names.map((name) => name.trim()).filter((name) => Boolean(name))),
     );
     if (!unique.length) {
       return undefined;
@@ -169,11 +175,7 @@ export class JeluClient {
       return undefined;
     }
     const unique = Array.from(
-      new Set(
-        tags
-          .map((tag) => tag.trim())
-          .filter((tag) => Boolean(tag)),
-      ),
+      new Set(tags.map((tag) => tag.trim()).filter((tag) => Boolean(tag))),
     );
     if (!unique.length) {
       return undefined;
