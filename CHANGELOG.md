@@ -1,3 +1,15 @@
+# [1.8.0](https://github.com/aauren/jelu-importer/compare/v1.7.4...v1.8.0) (2026-03-15)
+
+
+### Bug Fixes
+
+* **release.yml:** don't create two chrome artifacts for a release ([88d477b](https://github.com/aauren/jelu-importer/commit/88d477bad1d9b0ca09f234585ec399b8d1229502))
+
+
+### Features
+
+* add API token authentication ([cace41b](https://github.com/aauren/jelu-importer/commit/cace41b771793a8689487a4d7e6e8f9d000458d0))
+
 ## [1.7.4](https://github.com/aauren/jelu-importer/compare/v1.7.3...v1.7.4) (2026-01-01)
 
 
