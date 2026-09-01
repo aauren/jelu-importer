@@ -315,8 +315,12 @@ class PopupController {
   }
 
   private initAutocomplete() {
-    // Check if Jelu is configured with credentials
-    if (!this.options?.jeluUrl || !this.options?.username || !this.options?.password) {
+    // Check if Jelu is configured with credentials for either auth method
+    const hasBasicAuth = Boolean(this.options?.username && this.options?.password);
+    const hasTokenAuth = Boolean(
+      this.options?.authMethod === 'token' && this.options?.apiToken,
+    );
+    if (!this.options?.jeluUrl || (!hasBasicAuth && !hasTokenAuth)) {
       // Silently skip autocomplete if not configured
       return;
     }
