@@ -1,3 +1,18 @@
+# [1.10.0](https://github.com/aauren/jelu-importer/compare/v1.9.1...v1.10.0) (2026-09-01)
+
+
+### Bug Fixes
+
+* **release.yml:** actually publish chrome releases ([775f7c8](https://github.com/aauren/jelu-importer/commit/775f7c8c07db54518a86d67adfdf7cbcb1d7299a))
+* **release.yml:** install deps before web-ext sign ([ef18c17](https://github.com/aauren/jelu-importer/commit/ef18c1758b1108e6b6233fff4c81f723b643e900))
+
+
+### Features
+
+* **ci:** default workflows to read-only permissions ([7f0aec6](https://github.com/aauren/jelu-importer/commit/7f0aec63aec00ea59bcf26ae6b060a7ff24d1292))
+* **package.json:** pin chrome-webstore-upload-cli ([9545d0b](https://github.com/aauren/jelu-importer/commit/9545d0bbcaab6831834fdc1b21693f4027d0c248))
+* **release.yml:** pin write job actions to commit SHAs ([f5e1570](https://github.com/aauren/jelu-importer/commit/f5e15702967a53bbb41438d0839779111da1f6ff))
+
 ## [1.9.1](https://github.com/aauren/jelu-importer/compare/v1.9.0...v1.9.1) (2026-09-01)
 
 
