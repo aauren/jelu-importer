@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/aauren/jelu-importer/compare/v1.9.0...v1.9.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **release.yml:** add publisher id to chrome web store upload ([ac5aa9c](https://github.com/aauren/jelu-importer/commit/ac5aa9cbef45b0e04faabfb1e95f5a43ff1a59a1))
+
 # [1.9.0](https://github.com/aauren/jelu-importer/compare/v1.8.1...v1.9.0) (2026-09-01)
 
 
