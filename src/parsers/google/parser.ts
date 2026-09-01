@@ -147,14 +147,13 @@ function extractPublisher(infoMap: InfoMap): { publisher?: string; publishDate?:
   }
   const publisher = parts[0];
   let publishDate = cleanText(infoMap['published'] ?? undefined);
-  let remainder = cleanText(parts.slice(1).join(', ') ?? undefined);
+  const remainder = cleanText(parts.slice(1).join(', ') ?? undefined);
   if (!publishDate && remainder) {
     const segments = remainder.split('-');
     const candidate = cleanText(segments[0]);
     if (candidate && /\d{4}/.test(candidate)) {
       publishDate = candidate;
     }
-    remainder = cleanText(segments.slice(1).join('-') ?? undefined);
   }
 
   const pageMatch = rawPublisher.match(/(\d{1,5})\s+pages/i);
