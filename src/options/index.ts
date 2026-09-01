@@ -49,8 +49,12 @@ class OptionsController {
       passwordInput.required = isBasicAuth;
     }
 
+    // A stored token satisfies the requirement even though the input is left
+    // empty (we show placeholder dots instead), so we must not mark it required
+    // or native form validation blocks submit before our preserve logic runs
     if (this.apiTokenInput) {
-      this.apiTokenInput.required = !isBasicAuth;
+      const hasStoredToken = this.apiTokenInput.dataset.hasToken === 'true';
+      this.apiTokenInput.required = !isBasicAuth && !hasStoredToken;
     }
   }
 
