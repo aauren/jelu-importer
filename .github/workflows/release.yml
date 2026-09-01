@@ -179,6 +179,11 @@ jobs:
           CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+        # No subcommand on purpose. v4 only uploads *and* publishes when the command
+        # is omitted, because it derives autoPublish from the absence of one. Passing
+        # "upload" here would leave every release sitting in the store as a draft.
+        # The bare -- is required: with no positional to stop it, npx would otherwise
+        # eat --source as one of its own config flags and never forward it.
         run: |
           ZIP_FILE=$(find artifacts/chrome -name "*.zip" -print -quit)
-          npx --no chrome-webstore-upload upload --source "$ZIP_FILE"
+          npx --no chrome-webstore-upload -- --source "$ZIP_FILE"
