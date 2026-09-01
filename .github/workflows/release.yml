@@ -96,12 +96,9 @@ jobs:
         uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Package Extensions
-        if: steps.release.outputs.new_release_published == 'true'
-        run: |
-          npx web-ext build --source-dir dist --artifacts-dir artifacts/firefox
-          npx web-ext build --source-dir dist-chrome --artifacts-dir artifacts/chrome
-          node ./scripts/rename-artifacts.mjs
+      # No packaging step here on purpose. semantic-release's prepareCmd already
+      # runs npm run package, which cleans, rebuilds both targets and renames the
+      # zips, so the artifacts below are whatever prepareCmd left behind.
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: steps.release.outputs.new_release_published == 'true'
         with:
