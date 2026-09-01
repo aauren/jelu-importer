@@ -157,10 +157,19 @@ jobs:
     if: needs.release-and-package.outputs.release-created == 'true'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
         with:
           name: packaged-chrome
           path: artifacts/chrome
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      # chrome-webstore-upload-cli is a devDependency pinned to an exact version so
+      # that the store credentials below are never exposed to an unpinned registry
+      # fetch. The bin it installs is named chrome-webstore-upload, without the -cli.
+      - run: npm ci
       - name: Upload to Chrome Web Store
         # chrome-webstore-upload-cli v4 dropped the credential flags in favor of env vars
         # see: https://github.com/fregante/chrome-webstore-upload-cli/issues/80
@@ -172,6 +181,4 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
         run: |
           ZIP_FILE=$(find artifacts/chrome -name "*.zip" -print -quit)
-          npx chrome-webstore-upload-cli@latest upload \
-            --source "$ZIP_FILE" \
-            --auto-publish
+          npx --no chrome-webstore-upload upload --source "$ZIP_FILE"
