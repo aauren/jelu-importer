@@ -3,6 +3,11 @@ name: ci
 on:
   pull_request:
 
+# Read-only by default so that no job gets a token broader than it needs. Jobs
+# that write must opt in explicitly.
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
