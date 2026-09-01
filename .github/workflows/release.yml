@@ -129,13 +129,21 @@ jobs:
         with:
           name: packaged-firefox
           path: artifacts/firefox
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      # Without this, npx below has no local node_modules to resolve web-ext from
+      # and silently fetches an unpinned copy off the registry while the AMO
+      # secrets are in scope.
+      - run: npm ci
       - name: Extract ZIP for signing
         run: |
           mkdir -p dist-signing
           ZIP_FILE=$(find artifacts/firefox -name "*.zip" -print -quit)
           unzip -q "$ZIP_FILE" -d dist-signing
       - name: Sign Add-On via AMO
-        run: npx web-ext sign --source-dir dist-signing --artifacts-dir artifacts/signed --channel listed
+        run: npx --no web-ext sign --source-dir dist-signing --artifacts-dir artifacts/signed --channel listed
         env:
           WEB_EXT_API_KEY: ${{ secrets.AMO_ISSUER }}
           WEB_EXT_API_SECRET: ${{ secrets.AMO_SECRET }}
