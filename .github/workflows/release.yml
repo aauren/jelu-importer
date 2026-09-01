@@ -145,11 +145,11 @@ jobs:
           name: packaged-chrome
           path: artifacts/chrome
       - name: Upload to Chrome Web Store
-        continue-on-error: true
         # chrome-webstore-upload-cli v4 dropped the credential flags in favor of env vars
         # see: https://github.com/fregante/chrome-webstore-upload-cli/issues/80
         env:
           EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
           CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
