@@ -1,3 +1,11 @@
+## [1.8.1](https://github.com/aauren/jelu-importer/compare/v1.8.0...v1.8.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **index.ts:** allow users to save options ([928d672](https://github.com/aauren/jelu-importer/commit/928d6721a4a7303d21afc2b7c8acefdc4acd661b))
+* **index.ts:** enable autocomplete for token or password ([d85abd0](https://github.com/aauren/jelu-importer/commit/d85abd051e6920273265899fef6e611bb3cc0962))
+
 # [1.8.0](https://github.com/aauren/jelu-importer/compare/v1.7.4...v1.8.0) (2026-03-15)
 
 
