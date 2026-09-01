@@ -6,9 +6,10 @@ async function renameZip(dir, prefix) {
   const entries = await readdir(fullDir);
   for (const entry of entries) {
     if (!entry.endsWith('.zip')) continue;
-    const next = `${prefix}-${entry}`;
-    if (entry === next) continue;
-    await rename(path.join(fullDir, entry), path.join(fullDir, next));
+    // Skip anything already carrying the prefix so that a second pass over the
+    // same directory doesn't produce chrome-chrome-foo.zip
+    if (entry.startsWith(`${prefix}-`)) continue;
+    await rename(path.join(fullDir, entry), path.join(fullDir, `${prefix}-${entry}`));
   }
 }
 
