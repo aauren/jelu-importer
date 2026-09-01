@@ -1,3 +1,16 @@
+# [1.9.0](https://github.com/aauren/jelu-importer/compare/v1.8.1...v1.9.0) (2026-09-01)
+
+
+### Bug Fixes
+
+* **release.yml:** change from parameter secrets to env secrets ([367f984](https://github.com/aauren/jelu-importer/commit/367f98434b6781c70895f2f2fee73227497f88ea))
+
+
+### Features
+
+* **ci:** update node v22 -> v24 and semantic-release-action v4 -> v6 ([15e2dcc](https://github.com/aauren/jelu-importer/commit/15e2dcc3a28d1b7f62bcfa683e42e912d54f5928))
+* **package.json:** update dependencies ([9501a2b](https://github.com/aauren/jelu-importer/commit/9501a2bae1f6e96d4f66a0ebd77bcde1d346467d))
+
 ## [1.8.1](https://github.com/aauren/jelu-importer/compare/v1.8.0...v1.8.1) (2026-09-01)
 
 
