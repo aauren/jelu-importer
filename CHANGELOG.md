@@ -1,3 +1,11 @@
+## [1.10.1](https://github.com/aauren/jelu-importer/compare/v1.10.0...v1.10.1) (2026-10-04)
+
+
+### Bug Fixes
+
+* **release.yml:** drop the duplicate packaging step ([5bedbca](https://github.com/aauren/jelu-importer/commit/5bedbca2792e16e6877fd88f1935d1a38e126447))
+* **rename-artifacts.mjs:** make the rename idempotent ([d47a7a0](https://github.com/aauren/jelu-importer/commit/d47a7a02b5f4977c155a0dec824627151d259247))
+
 # [1.10.0](https://github.com/aauren/jelu-importer/compare/v1.9.1...v1.10.0) (2026-09-01)
 
 
